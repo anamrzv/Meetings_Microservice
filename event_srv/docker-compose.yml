@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: event_db
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5432:5432"
+    volumes:
+      - event-db-data:/var/lib/postgresql/data
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/create_db.sql
+    networks:
+      - event-network
+
+  application:
+    container_name: application
+    depends_on:
+      - postgres
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: jdbc:postgresql://database:5432/event_db
+      DATABASE_NAME: chat_db
+      DATABASE_PASSWORD: 123
+      DARABASE_USER: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+    networks:
+      - event-network
+
+networks:
+  event-network:
+
+volumes:
+  event-db-data:
