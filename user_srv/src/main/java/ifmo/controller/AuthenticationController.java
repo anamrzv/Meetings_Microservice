@@ -1,6 +1,7 @@
 package ifmo.controller;
 
 import ifmo.service.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +12,6 @@ import ifmo.requests.AuthenticationRequest;
 import ifmo.requests.AuthenticationResponse;
 import ifmo.requests.RegisterRequest;
 
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")

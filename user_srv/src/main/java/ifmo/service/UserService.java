@@ -8,11 +8,11 @@ import ifmo.model.ProfileEntity;
 import ifmo.model.UserEntity;
 import ifmo.requests.RegisterRequest;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.time.Period;
 

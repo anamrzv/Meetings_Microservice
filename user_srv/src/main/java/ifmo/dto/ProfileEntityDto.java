@@ -3,10 +3,10 @@ package ifmo.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ifmo.model.ProfileEntity;
 import ifmo.validator.Birthday;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
-import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 
