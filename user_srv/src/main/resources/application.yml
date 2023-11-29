@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: user-srv-eureka-client
+  datasource:
+    url: jdbc:postgresql://database:5432/user_db
+    username: postgres
+    password: 123
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    url: jdbc:postgresql://database:5432/user_db
+    password: 123
+    user: postgres
+    locations: classpath:db/migration
+    baselineOnMigrate: true
+    enabled: true
+    baseline-version: 0
+    baseline-description: "init"
+application:
+  constraints:
+    secret-key: "aa641fed0dd8893053c23823e1295c4b605b39872f3745f43ac38b4438c9c7fb"
+server:
+  port: 0
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true
+
