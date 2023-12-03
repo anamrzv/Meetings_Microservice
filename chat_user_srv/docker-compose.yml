@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  chat_user_database:
+    image: postgres:latest
+    container_name: chat_user_database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: chat_user_db
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5432:5432"
+    volumes:
+      - chat_user-db-data:/var/lib/postgresql/data
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/create_db.sql
+    networks:
+      - chat_user-network
+
+  application:
+    container_name: application
+    depends_on:
+      - chat_user_database
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: jdbc:postgresql://chat_user_database:5432/chat_user_db
+      DATABASE_NAME: chat_user_db
+      DATABASE_PASSWORD: 123
+      DATABASE_USER: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+    networks:
+      - chat_user-network
+
+networks:
+  chat_user-network:
+
+volumes:
+  chat_user-db-data:
