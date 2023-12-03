@@ -1,5 +1,7 @@
 package ifmo.service;
 
+import ifmo.dto.UserEntityDto;
+import ifmo.exceptions.CustomNotFoundException;
 import ifmo.repository.ProfileRepository;
 import ifmo.repository.RoleRepository;
 import ifmo.repository.UserRepository;
@@ -24,6 +26,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+
+    public UserEntityDto getUser(String login) {
+        var user = userRepository.findByLogin(login).orElseThrow(() -> new CustomNotFoundException("Юзер не найден"));
+        return new UserEntityDto(user);
+    }
 
     @Transactional
     public UserEntity createUserWithProfile(RegisterRequest req) {
