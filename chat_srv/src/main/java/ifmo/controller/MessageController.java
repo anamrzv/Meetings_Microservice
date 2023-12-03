@@ -12,21 +12,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/chats")
 @RequiredArgsConstructor
-public class ChatController {
+public class MessageController {
 
     private final ChatService chatService;
 
     @Autowired
     private UserClient userClient;
-
-    //private final JwtService jwtService;
-
-    private static final int START_OF_JWT_TOKEN = 7;
 
     @GetMapping(value = "/{chat_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -36,28 +30,32 @@ public class ChatController {
         return ResponseEntity.ok().body(messages);
     }
 
-//    @PostMapping(value = "/{chat_id}",
-//            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-//            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-//    private ResponseEntity<MessageDTO> sendMessageToChat(@RequestHeader("Authorization") String request,
-//                                                         @PathVariable(value = "chat_id") long chatId,
-//                                                         @RequestBody String message) {
-//        var jwt = request.substring(START_OF_JWT_TOKEN);
-//        var userLogin = jwtService.extractUserLogin(jwt);
-//        var msgDto = chatService.addMessageToChat(chatId, userLogin, message);
-//        return ResponseEntity.ok().body(msgDto);
-//    }
-//
+    @GetMapping(value = "/entity/{chat_id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    private ResponseEntity<ChatEntityDto> getChat(@PathVariable(value = "chat_id") long chatId) {
+        var chat = chatService.getChatById(chatId);
+        return ResponseEntity.ok().body(chat);
+    }
+
+    @PostMapping(value = "/{chat_id}",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    private ResponseEntity<MessageDTO> sendMessageToChat(@RequestHeader("Username") String userLogin,
+                                                         @PathVariable(value = "chat_id") long chatId,
+                                                         @RequestBody String message) {
+        var sender = userClient.getUser(userLogin);
+        var msgDto = chatService.addMessageToChat(chatId, sender.getBody().getId(), message);
+        return ResponseEntity.ok().body(msgDto);
+    }
+
 
 //    @GetMapping(value = "/",
 //            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-//    private ResponseEntity<List<ChatEntityDto>> getAllChatsByUser(@RequestHeader("Authorization") String request) {
-//        var jwt = request.substring(START_OF_JWT_TOKEN);
-//        var userLogin = jwtService.extractUserLogin(jwt);
+//    private ResponseEntity<List<ChatEntityDto>> getAllChatsByUser(@RequestHeader("Username") String userLogin) {
 //        var chats = chatService.getAllChatsByUserLogin(userLogin);
 //        return ResponseEntity.ok().body(chats);
 //    }
-//
+
 //    @PostMapping(value = "/{second_user}",
 //            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
 //            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})

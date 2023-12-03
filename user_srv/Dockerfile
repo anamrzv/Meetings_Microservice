@@ -10,6 +10,6 @@ RUN gradle build bootJar -x test
 FROM openjdk:17
 WORKDIR /usr/src/java-app
 # copy only the artifacts we need from the first stage and discard the rest
-COPY --from=GRADLE_BUILD /usr/src/java-code/build/libs/usersrv-0.0.1-SNAPSHOT.jar ./usersrv.jar
+COPY --from=GRADLE_BUILD /usr/src/java-code/build/libs/user_srv-0.0.1-SNAPSHOT.jar ./usersrv.jar
 # set the startup command to execute the jar
 CMD ["java", "-jar", "usersrv.jar"]

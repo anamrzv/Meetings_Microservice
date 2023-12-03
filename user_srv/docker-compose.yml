@@ -1,8 +1,8 @@
 version: '3.8'
 services:
-  postgres:
+  user_database:
     image: postgres:latest
-    container_name: database
+    container_name: user_database
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
@@ -19,15 +19,15 @@ services:
   application:
     container_name: application
     depends_on:
-      - postgres
+      - user_database
     build:
       context: .
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: jdbc:postgresql://database:5432/user_db
+      DATABASE_URL: jdbc:postgresql://user_database:5432/user_db
       DATABASE_NAME: user_db
       DATABASE_PASSWORD: 123
-      DARABASE_USER: postgres
+      DATABASE_USER: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
     networks:
       - user-network

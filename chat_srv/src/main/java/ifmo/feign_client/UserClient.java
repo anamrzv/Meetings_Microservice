@@ -11,4 +11,7 @@ public interface UserClient {
 
     @GetMapping("/{login}")
     public ResponseEntity<UserEntityDto> getUser(@PathVariable String login);
+
+    @GetMapping("/by/id/{id}")
+    public ResponseEntity<UserEntityDto> getUserById(@PathVariable Long id);
 }

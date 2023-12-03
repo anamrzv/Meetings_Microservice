@@ -2,12 +2,12 @@ spring:
   application:
     name: user-srv-eureka-client
   datasource:
-    url: jdbc:postgresql://database:5432/user_db
+    url: jdbc:postgresql://user_database:5432/user_db
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
   flyway:
-    url: jdbc:postgresql://database:5432/user_db
+    url: jdbc:postgresql://user_database:5432/user_db
     password: 123
     user: postgres
     locations: classpath:db/migration

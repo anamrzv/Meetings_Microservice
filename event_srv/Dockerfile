@@ -10,6 +10,6 @@ RUN gradle build bootJar -x test
 FROM openjdk:17
 WORKDIR /usr/src/java-app
 # copy only the artifacts we need from the first stage and discard the rest
-COPY --from=GRADLE_BUILD /usr/src/java-code/build/libs/eventsrv-0.0.1-SNAPSHOT.jar ./eventsrv.jar
+COPY --from=GRADLE_BUILD /usr/src/java-code/build/libs/event_srv-0.0.1-SNAPSHOT.jar ./eventsrv.jar
 # set the startup command to execute the jar
 CMD ["java", "-jar", "eventsrv.jar"]

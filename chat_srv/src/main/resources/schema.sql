@@ -8,14 +8,15 @@ create table if not exists message
 (
     id           serial primary key,
     chat_id      integer references chat (id),
-    sender       integer,
+    sender       bigint,
     content      text                                not null,
     time_to_send timestamp default current_timestamp not null
 );
 
 create table if not exists user_chat
 (
-    user_id integer,
-    chat_id integer references chat (id)
+    user_id bigint,
+    chat_id bigint references chat (id),
+    primary key (user_id, chat_id)
 );
 

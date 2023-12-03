@@ -2,8 +2,11 @@ package ifmo.service;
 
 import ifmo.dto.ChatEntityDto;
 import ifmo.dto.MessageDTO;
+import ifmo.dto.UserEntityDto;
 import ifmo.exceptions.CustomExistsException;
 import ifmo.exceptions.CustomNotFoundException;
+import ifmo.feign_client.ChatUserClient;
+import ifmo.feign_client.UserClient;
 import ifmo.model.ChatEntity;
 import ifmo.model.MessageEntity;
 import ifmo.repository.ChatRepository;
@@ -11,77 +14,79 @@ import ifmo.repository.MessageRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class ChatService {
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
-//    private final UserRepository userRepository;
+
+    @Autowired
+    private UserClient userClient;
+
+    @Autowired
+    private ChatUserClient chatUserClient;
 
     public Page<MessageDTO> getAllMessagesByChatId(Long id, Pageable pageable) {
         var chat = chatRepository.getChatEntityById(id).orElseThrow(() -> new CustomNotFoundException("Чата с таким id не существует"));
         return messageRepository.findAllByChat(chat, pageable).map(MessageDTO::new);
     }
 
-//    public List<ChatEntityDto> getAllChatsByUserLogin(String login) {
-//        var user = userRepository.findByLogin(login).orElseThrow(() -> new CustomNotFoundException("Пользователь не найден"));
-//        return user.getChats().stream()
-//                .map(ChatEntityDto::new)
-//                .collect(Collectors.toList());
-//    }
+    public ChatEntityDto getChatById(Long id) {
+        var chat = chatRepository.getChatEntityById(id).orElseThrow(() -> new CustomNotFoundException("Чат не найден"));
+        return new ChatEntityDto(chat);
+    }
 
-//    @Transactional
-//    public MessageDTO addMessageToChat(Long chatId, String login, String message) {
-//        try {
-//            var chat = chatRepository.getReferenceById(chatId);
-//            var user = userRepository.findByLogin(login).orElseThrow(() -> new CustomNotFoundException("Пользователь не найден"));
-//            MessageEntity newMessage = new MessageEntity();
-//            newMessage.setContent(message);
-//            newMessage.setSender(user);
-//            newMessage.setChat(chat);
-//            var savedMessage = messageRepository.save(newMessage);
-//            return new MessageDTO(savedMessage);
-//        } catch (EntityNotFoundException e) {
-//            throw new CustomNotFoundException("Чат пользователя не найден");
-//        }
-//    }
+    @Transactional
+    public MessageDTO addMessageToChat(Long chatId, long senderId, String message) {
+        try {
+            var chat = chatRepository.getReferenceById(chatId);
+            MessageEntity newMessage = new MessageEntity();
+            newMessage.setContent(message);
+            newMessage.setSender(senderId);
+            newMessage.setChat(chat);
+            var savedMessage = messageRepository.save(newMessage);
+            return new MessageDTO(savedMessage);
+        } catch (EntityNotFoundException e) {
+            throw new CustomNotFoundException("Чат пользователя не найден");
+        }
+    }
 
-//    @Transactional
-//    public ChatEntityDto createChat(String firstLogin, String secondLogin, String message) {
-//        var firstUser = userRepository.findByLogin(firstLogin).orElseThrow(() -> new CustomNotFoundException("Пользователь, который хочет создать чат, не найден"));
-//        var secondUser = userRepository.findByLogin(secondLogin).orElseThrow(() -> new CustomNotFoundException("Пользователь, с которым нужно создать чат, не найден"));
-//
-//        var existingChats = getAllChatsByUserLogin(firstLogin);
-//        var found = existingChats.stream()
-//                .filter(chatDTO -> chatDTO.getUsers().contains(new UserEntityDto(firstUser)) &&
-//                        chatDTO.getUsers().contains(new UserEntityDto(secondUser)))
-//                .findFirst();
-//
-//        if (found.isPresent()) throw new CustomExistsException("Чат между пользователями уже существует");
-//
-//        ChatEntity chatEntity = new ChatEntity();
+    @Transactional
+    public ChatEntityDto createChat(String firstLogin, String secondLogin, String message) {
+        var firstUser = userClient.getUser(firstLogin);
+        var secondUser = userClient.getUser(secondLogin);
+
+        var existingChats = chatUserClient.getAllChatsByUser(firstLogin).getBody();
+
+        var found = existingChats.stream()
+                .filter(chatDTO -> Objects.requireNonNull(chatUserClient.getAllUsersByChat(chatDTO.getId())
+                                .getBody())
+                        .contains(new UserEntityDto(1L, firstLogin)) &&
+                        Objects.requireNonNull(chatUserClient.getAllUsersByChat(chatDTO.getId())
+                                        .getBody())
+                                .contains(new UserEntityDto(1L, secondLogin)))
+                .findFirst();
+        if (found.isPresent()) throw new CustomExistsException("Чат между пользователями уже существует");
+
+        ChatEntity chatEntity = new ChatEntity();
+        //TODO: call save in userchat
 //        chatEntity.getUsers().add(firstUser);
 //        chatEntity.getUsers().add(secondUser);
-//        chatEntity = chatRepository.save(chatEntity);
-//
-//        firstUser.addChat(chatEntity);
-//        secondUser.addChat(chatEntity);
-//        userRepository.save(firstUser);
-//        userRepository.save(secondUser);
-//
-//        MessageEntity newMessage = new MessageEntity();
-//        newMessage.setContent(message);
-//        newMessage.setSender(firstUser);
-//        newMessage.setChat(chatEntity);
-//        messageRepository.save(newMessage);
-//
-//        return new ChatEntityDto(chatEntity);
-//    }
+        chatEntity = chatRepository.save(chatEntity);
+
+        MessageEntity newMessage = new MessageEntity();
+        newMessage.setContent(message);
+        newMessage.setSender(Objects.requireNonNull(firstUser.getBody()).getId());
+        newMessage.setChat(chatEntity);
+        messageRepository.save(newMessage);
+
+        return new ChatEntityDto(chatEntity);
+    }
 }
