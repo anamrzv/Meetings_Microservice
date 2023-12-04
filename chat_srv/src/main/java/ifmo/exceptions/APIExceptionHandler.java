@@ -1,6 +1,5 @@
 package ifmo.exceptions;
 
-import ifmo.exceptions.custom.UnsuccessfulSave;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -16,21 +15,6 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class APIExceptionHandler {
-
-    @ExceptionHandler(value = CustomBadRequestException.class)
-    public ResponseEntity<Object> handleCustomBadExceptions(CustomBadRequestException customException) {
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-        ExceptionDTO exceptionDTO = new ExceptionDTO(customException.getMessage(), badRequest, LocalDateTime.now());
-        return new ResponseEntity<>(exceptionDTO, badRequest);
-    }
-
-    @ExceptionHandler(value = UnsuccessfulSave.class)
-    public ResponseEntity<Object> handleUnsuccessfulSaveExceptions(UnsuccessfulSave customException) {
-        HttpStatus badRequest = HttpStatus.INTERNAL_SERVER_ERROR;
-        ExceptionDTO exceptionDTO = new ExceptionDTO(customException.getMessage(), badRequest, LocalDateTime.now());
-        return new ResponseEntity<>(exceptionDTO, badRequest);
-    }
-
     @ExceptionHandler(value = CustomExistsException.class)
     public ResponseEntity<Object> handleCustomExistsExceptions(CustomExistsException customException) {
         HttpStatus badRequest = HttpStatus.CONFLICT;

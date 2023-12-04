@@ -1,6 +1,7 @@
 package ifmo.service;
 
 import ifmo.dto.ChatEntityDto;
+import ifmo.dto.ChatUserDto;
 import ifmo.dto.MessageDTO;
 import ifmo.dto.UserEntityDto;
 import ifmo.exceptions.CustomExistsException;
@@ -64,7 +65,7 @@ public class ChatService {
         var secondUser = userClient.getUser(secondLogin);
 
         var existingChats = chatUserClient.getAllChatsByUser(firstLogin).getBody();
-
+        if (existingChats == null) throw new CustomNotFoundException("Ошибка при создании чата");
         var found = existingChats.stream()
                 .filter(chatDTO -> Objects.requireNonNull(chatUserClient.getAllUsersByChat(chatDTO.getId())
                                 .getBody())
@@ -75,11 +76,9 @@ public class ChatService {
                 .findFirst();
         if (found.isPresent()) throw new CustomExistsException("Чат между пользователями уже существует");
 
-        ChatEntity chatEntity = new ChatEntity();
-        //TODO: call save in userchat
-//        chatEntity.getUsers().add(firstUser);
-//        chatEntity.getUsers().add(secondUser);
-        chatEntity = chatRepository.save(chatEntity);
+        var chatEntity = chatRepository.save(new ChatEntity());
+        chatUserClient.saveChatUser(new ChatUserDto(chatEntity.getId(), Objects.requireNonNull(firstUser.getBody()).getId()));
+        chatUserClient.saveChatUser(new ChatUserDto(chatEntity.getId(), Objects.requireNonNull(secondUser.getBody()).getId()));
 
         MessageEntity newMessage = new MessageEntity();
         newMessage.setContent(message);

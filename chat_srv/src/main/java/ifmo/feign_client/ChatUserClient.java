@@ -1,12 +1,12 @@
 package ifmo.feign_client;
 
 import ifmo.dto.ChatEntityDto;
+import ifmo.dto.ChatUserDto;
 import ifmo.dto.UserEntityDto;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,5 +17,8 @@ public interface ChatUserClient {
     ResponseEntity<List<ChatEntityDto>> getAllChatsByUser(@RequestHeader("Username") String userLogin);
 
     @GetMapping("/users/{id}")
-    ResponseEntity<List<UserEntityDto>> getAllUsersByChat(@RequestParam Long id);
+    ResponseEntity<List<UserEntityDto>> getAllUsersByChat(@PathVariable Long id);
+
+    @PostMapping("/")
+    ResponseEntity<HttpStatus> saveChatUser(@RequestBody ChatUserDto dto);
 }

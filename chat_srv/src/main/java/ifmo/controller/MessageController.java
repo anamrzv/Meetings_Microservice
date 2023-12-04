@@ -48,23 +48,13 @@ public class MessageController {
         return ResponseEntity.ok().body(msgDto);
     }
 
-
-//    @GetMapping(value = "/",
-//            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-//    private ResponseEntity<List<ChatEntityDto>> getAllChatsByUser(@RequestHeader("Username") String userLogin) {
-//        var chats = chatService.getAllChatsByUserLogin(userLogin);
-//        return ResponseEntity.ok().body(chats);
-//    }
-
-//    @PostMapping(value = "/{second_user}",
-//            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-//            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-//    public ResponseEntity<ChatEntityDto> createChatWithUser(@PathVariable(value = "second_user") String secondUserLogin,
-//                                                            @RequestHeader("Authorization") String request,
-//                                                            @RequestBody String message) {
-//        var jwt = request.substring(START_OF_JWT_TOKEN);
-//        var userLogin = jwtService.extractUserLogin(jwt);
-//        var chat = chatService.createChat(userLogin, secondUserLogin, message);
-//        return ResponseEntity.ok().body(chat);
-//    }
+    @PostMapping(value = "/{second_user}",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity<ChatEntityDto> createChatWithUser(@PathVariable(value = "second_user") String secondUserLogin,
+                                                            @RequestHeader("Username") String userLogin,
+                                                            @RequestBody String message) {
+        var chat = chatService.createChat(userLogin, secondUserLogin, message);
+        return ResponseEntity.ok().body(chat);
+    }
 }

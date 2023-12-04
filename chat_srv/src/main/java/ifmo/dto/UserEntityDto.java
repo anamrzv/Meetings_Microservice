@@ -23,7 +23,7 @@ public class UserEntityDto implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserEntityDto that = (UserEntityDto) o;
-        return Objects.equals(login, that.login);
+        return login.equals(that.login);
     }
 
     @Override
