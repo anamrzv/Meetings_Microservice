@@ -1,13 +1,13 @@
 spring:
   application:
-    name: event-srv-eureka-client
+    name: meeting-srv-eureka-client
   datasource:
-    url: jdbc:postgresql://event_database:5432/event_db
+    url: jdbc:postgresql://meeting_database:5432/meeting_db
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
   flyway:
-    url: jdbc:postgresql://event_database:5432/event_db
+    url: jdbc:postgresql://meeting_database:5432/meeting_db
     password: 123
     user: postgres
     locations: classpath:db/migration

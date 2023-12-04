@@ -25,8 +25,6 @@ public class EventController {
 
     private final EventService eventService;
 
-    private static final int START_OF_JWT_TOKEN = 7;
-
     @GetMapping(value = "/",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<Page<EventEntityDto>> getAllEvents(@RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
@@ -59,17 +57,6 @@ public class EventController {
         var addedEvent = eventService.findEventById(eventId);
         return ResponseEntity.ok().body(addedEvent);
     }
-
-//    @PostMapping(value = "/{event_id}",
-//            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-//            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-//    private ResponseEntity<HttpStatus> addEventToInteresting(@PathVariable(value = "event_id") @Min(1) long eventId,
-//                                                             @RequestHeader("Authorization") String request) {
-//        var jwt = request.substring(START_OF_JWT_TOKEN);
-//        var userLogin = jwtService.extractUserLogin(jwt);
-//        userService.addEventToInteresting(eventId, userLogin);
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
 
     @PostMapping(value = "/",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
