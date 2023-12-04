@@ -1,8 +1,8 @@
 version: '3.8'
 services:
-  postgres:
+  chat_database:
     image: postgres:latest
-    container_name: database
+    container_name: chat_database
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
@@ -11,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - event-db-data:/var/lib/postgresql/data
+      - chat-db-data:/var/lib/postgresql/data
       - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/create_db.sql
     networks:
       - chat-network
@@ -19,15 +19,15 @@ services:
   application:
     container_name: application
     depends_on:
-      - postgres
+      - chat_database
     build:
       context: .
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: jdbc:postgresql://database:5432/chat_db
+      DATABASE_URL: jdbc:postgresql://chat_database:5432/chat_db
       DATABASE_NAME: chat_db
       DATABASE_PASSWORD: 123
-      DARABASE_USER: postgres
+      DATABASE_USER: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
     networks:
       - chat-network

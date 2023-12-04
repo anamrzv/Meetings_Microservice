@@ -24,7 +24,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: jdbc:postgresql://database:5432/event_db
+      DATABASE_URL: jdbc:postgresql://event_database:5432/event_db
       DATABASE_NAME: event_db
       DATABASE_PASSWORD: 123
       DATABASE_USER: postgres

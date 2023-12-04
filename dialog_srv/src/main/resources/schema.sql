@@ -1,4 +1,4 @@
-create table if not exists user_chat
+create table if not exists dialogs
 (
     id      serial primary key,
     user_id bigint,

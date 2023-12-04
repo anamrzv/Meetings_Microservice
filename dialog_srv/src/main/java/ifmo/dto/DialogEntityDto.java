@@ -3,7 +3,7 @@ package ifmo.dto;
 import lombok.Getter;
 
 @Getter
-public class ChatUserDto {
+public class DialogEntityDto {
     Long chatId;
     Long userId;
 }

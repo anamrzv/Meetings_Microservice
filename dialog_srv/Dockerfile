@@ -10,6 +10,6 @@ RUN gradle build bootJar -x test
 FROM openjdk:17
 WORKDIR /usr/src/java-app
 # copy only the artifacts we need from the first stage and discard the rest
-COPY --from=GRADLE_BUILD /usr/src/java-code/build/libs/chat_user_srv-0.0.1-SNAPSHOT.jar ./chat_user_srv.jar
+COPY --from=GRADLE_BUILD /usr/src/java-code/build/libs/dialog_srv-0.0.1-SNAPSHOT.jar ./dialog_srv.jar
 # set the startup command to execute the jar
-CMD ["java", "-jar", "chat_user_srv.jar"]
+CMD ["java", "-jar", "dialog_srv.jar"]

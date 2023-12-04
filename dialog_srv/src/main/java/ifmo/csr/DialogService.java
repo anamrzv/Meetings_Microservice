@@ -1,6 +1,6 @@
 package ifmo.csr;
 
-import ifmo.model.ChatUserEntity;
+import ifmo.model.DialogEntity;
 import ifmo.dto.ChatEntityDto;
 import ifmo.dto.UserEntityDto;
 import ifmo.feign_client.ChatClient;
@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ChatUserService {
+public class DialogService {
 
-    private final ChatUserRepository chatUserRepository;
+    private final DialogRepository dialogRepository;
 
     @Autowired
     private ChatClient chatClient;
@@ -27,7 +27,7 @@ public class ChatUserService {
 
     public List<ChatEntityDto> getAllChatsByUserLogin(String userLogin) {
         var user = userClient.getUser(userLogin);
-        return chatUserRepository.getChatUserEntitiesByUserId(Objects.requireNonNull(user.getBody()).id())
+        return dialogRepository.getChatUserEntitiesByUserId(Objects.requireNonNull(user.getBody()).id())
                 .stream()
                 .map(chatUser -> chatClient.getChat(chatUser.getChatId()).getBody())
                 .collect(Collectors.toList());
@@ -35,17 +35,17 @@ public class ChatUserService {
 
     public List<UserEntityDto> getAllUsersByChat(Long chatId) {
         var chat = chatClient.getChat(chatId);
-        return chatUserRepository.getChatUserEntitiesByChatId(Objects.requireNonNull(chat.getBody()).id())
+        return dialogRepository.getChatUserEntitiesByChatId(Objects.requireNonNull(chat.getBody()).id())
                 .stream()
                 .map(chatUser -> userClient.getUserById(chatUser.getUserId()).getBody())
                 .collect(Collectors.toList());
     }
 
     public void saveChatUser(Long chatId, Long userId) {
-        ChatUserEntity entity = new ChatUserEntity();
+        DialogEntity entity = new DialogEntity();
         entity.setChatId(chatId);
         entity.setUserId(userId);
-        chatUserRepository.save(entity);
+        dialogRepository.save(entity);
     }
 
 }

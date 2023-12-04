@@ -17,12 +17,10 @@ public class MessageDTO implements Serializable {
     String content;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime timeToSend;
-   //String sender;
 
     public MessageDTO(MessageEntity messageEntity) {
         id = messageEntity.getId();
         content = messageEntity.getContent();
         timeToSend = messageEntity.getTimeToSend();
-        //sender = messageEntity.getSender().getLogin();
     }
 }

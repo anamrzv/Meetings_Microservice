@@ -5,10 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "user_chat")
+@Table(name = "dialogs")
 @Getter
 @Setter
-public class ChatUserEntity {
+public class DialogEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

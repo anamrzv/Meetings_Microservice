@@ -25,8 +25,8 @@ repositories {
 
 ext {
     set('springCloudVersion', "2023.0.0-RC1")
-    name = 'Eureka ChatUser Service'
-    description = 'Eureka ChatUser Service'
+    name = 'Eureka Doalog Service'
+    description = 'Eureka Dialog Service'
     sourceEncoding='UTF-8'
 }
 
@@ -55,7 +55,7 @@ dependencyManagement {
 
 flyway {
     driver = 'org.postgresql.Driver'
-    url = 'jdbc:postgresql://localhost:5432/chat_db'
+    url = 'jdbc:postgresql://dialog_database:5432/dialog_db'
     user = 'postgres'
     password = '123'
 }

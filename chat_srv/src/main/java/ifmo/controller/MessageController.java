@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/v1/chats")
 @RequiredArgsConstructor
@@ -44,7 +46,7 @@ public class MessageController {
                                                          @PathVariable(value = "chat_id") long chatId,
                                                          @RequestBody String message) {
         var sender = userClient.getUser(userLogin);
-        var msgDto = chatService.addMessageToChat(chatId, sender.getBody().getId(), message);
+        var msgDto = chatService.addMessageToChat(chatId, Objects.requireNonNull(sender.getBody()).getId(), message);
         return ResponseEntity.ok().body(msgDto);
     }
 

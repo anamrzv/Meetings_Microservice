@@ -14,11 +14,9 @@ import java.util.stream.Collectors;
 public class ChatEntityDto implements Serializable {
     Long id;
     LocalDateTime creationDate;
-    //Set<UserEntityDto> users;
 
     public ChatEntityDto(ChatEntity chatEntity) {
         id = chatEntity.getId();
         creationDate = chatEntity.getCreationDate();
-        //users = chatEntity.getUsers().stream().map(UserEntityDto::new).collect(Collectors.toSet());
     }
 }

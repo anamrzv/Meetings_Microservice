@@ -1,12 +1,12 @@
 package ifmo.service;
 
 import ifmo.dto.ChatEntityDto;
-import ifmo.dto.ChatUserDto;
+import ifmo.dto.DialogEntityDto;
 import ifmo.dto.MessageDTO;
 import ifmo.dto.UserEntityDto;
 import ifmo.exceptions.CustomExistsException;
 import ifmo.exceptions.CustomNotFoundException;
-import ifmo.feign_client.ChatUserClient;
+import ifmo.feign_client.DialogClient;
 import ifmo.feign_client.UserClient;
 import ifmo.model.ChatEntity;
 import ifmo.model.MessageEntity;
@@ -27,12 +27,8 @@ import java.util.Objects;
 public class ChatService {
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
-
-    @Autowired
-    private UserClient userClient;
-
-    @Autowired
-    private ChatUserClient chatUserClient;
+    private final UserClient userClient;
+    private final DialogClient dialogClient;
 
     public Page<MessageDTO> getAllMessagesByChatId(Long id, Pageable pageable) {
         var chat = chatRepository.getChatEntityById(id).orElseThrow(() -> new CustomNotFoundException("Чата с таким id не существует"));
@@ -64,21 +60,21 @@ public class ChatService {
         var firstUser = userClient.getUser(firstLogin);
         var secondUser = userClient.getUser(secondLogin);
 
-        var existingChats = chatUserClient.getAllChatsByUser(firstLogin).getBody();
+        var existingChats = dialogClient.getAllChatsByUser(firstLogin).getBody();
         if (existingChats == null) throw new CustomNotFoundException("Ошибка при создании чата");
         var found = existingChats.stream()
-                .filter(chatDTO -> Objects.requireNonNull(chatUserClient.getAllUsersByChat(chatDTO.getId())
+                .filter(chatDTO -> Objects.requireNonNull(dialogClient.getAllUsersByChat(chatDTO.getId())
                                 .getBody())
                         .contains(new UserEntityDto(1L, firstLogin)) &&
-                        Objects.requireNonNull(chatUserClient.getAllUsersByChat(chatDTO.getId())
+                        Objects.requireNonNull(dialogClient.getAllUsersByChat(chatDTO.getId())
                                         .getBody())
                                 .contains(new UserEntityDto(1L, secondLogin)))
                 .findFirst();
         if (found.isPresent()) throw new CustomExistsException("Чат между пользователями уже существует");
 
         var chatEntity = chatRepository.save(new ChatEntity());
-        chatUserClient.saveChatUser(new ChatUserDto(chatEntity.getId(), Objects.requireNonNull(firstUser.getBody()).getId()));
-        chatUserClient.saveChatUser(new ChatUserDto(chatEntity.getId(), Objects.requireNonNull(secondUser.getBody()).getId()));
+        dialogClient.saveChatUser(new DialogEntityDto(chatEntity.getId(), Objects.requireNonNull(firstUser.getBody()).getId()));
+        dialogClient.saveChatUser(new DialogEntityDto(chatEntity.getId(), Objects.requireNonNull(secondUser.getBody()).getId()));
 
         MessageEntity newMessage = new MessageEntity();
         newMessage.setContent(message);

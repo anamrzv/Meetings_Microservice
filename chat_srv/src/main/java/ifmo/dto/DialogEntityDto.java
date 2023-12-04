@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ChatUserDto {
+public class DialogEntityDto {
     Long chatId;
     Long userId;
 }
