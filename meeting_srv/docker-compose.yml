@@ -9,15 +9,15 @@ services:
       POSTGRES_DB: meeting_db
       PGDATA: "/var/lib/postgresql/data/pgdata"
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - meeting-db-data:/var/lib/postgresql/data
       - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/create_db.sql
     networks:
       - meeting-network
 
-  application:
-    container_name: application
+  meeting_application:
+    container_name: meeting_application
     depends_on:
       - meeting_database
     build:

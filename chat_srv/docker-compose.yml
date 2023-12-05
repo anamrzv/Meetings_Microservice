@@ -9,15 +9,15 @@ services:
       POSTGRES_DB: chat_db
       PGDATA: "/var/lib/postgresql/data/pgdata"
     ports:
-      - "5432:5432"
+      - "5436:5432"
     volumes:
       - chat-db-data:/var/lib/postgresql/data
       - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/create_db.sql
     networks:
       - chat-network
 
-  application:
-    container_name: application
+  chat_application:
+    container_name: chat_application
     depends_on:
       - chat_database
     build:

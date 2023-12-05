@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  service_registry_application:
+    container_name: service_registry_application
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "chat_user-srv-eureka-client", path = "/api/v1/chats")
+@FeignClient(name = "dialog-srv-eureka-client", path = "/api/v1/dialog")
 public interface DialogClient {
 
     @GetMapping("/")

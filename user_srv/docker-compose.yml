@@ -16,8 +16,8 @@ services:
     networks:
       - user-network
 
-  application:
-    container_name: application
+  user_application:
+    container_name: user_application
     depends_on:
       - user_database
     build:

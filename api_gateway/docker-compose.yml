@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  api_gateway_application:
+    container_name: api_gateway_application
+    build:
+      context: .
+      dockerfile: Dockerfile
