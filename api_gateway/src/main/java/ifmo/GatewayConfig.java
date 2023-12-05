@@ -19,13 +19,13 @@ public class GatewayConfig {
         return builder.routes()
                 .route("user-route", r -> r.path("/api/v1/user/**")
                         .filters(f -> f.filter(filter))
-                        .uri("lb://user_srv"))
+                        .uri("lb://user-srv-eureka-client"))
                 .route("profile-route", r -> r.path("/api/v1/profile/**")
                         .filters(f -> f.filter(filter))
-                        .uri("lb://user_srv"))
+                        .uri("lb://user-srv-eureka-client"))
                 .route("auth-route", r -> r.path("/api/v1/auth/**")
                         .filters(f -> f.filter(filter))
-                        .uri("lb://user_srv"))
+                        .uri("lb://user-srv-eureka-client"))
                 .build();
     }
 }

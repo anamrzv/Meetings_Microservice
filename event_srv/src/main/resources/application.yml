@@ -2,12 +2,12 @@ spring:
   application:
     name: event-srv-eureka-client
   datasource:
-    url: jdbc:postgresql://event_database:5432/event_db
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5434/event_db}
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
   flyway:
-    url: jdbc:postgresql://event_database:5432/event_db
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5434/event_db}
     password: 123
     user: postgres
     locations: classpath:db/migration
@@ -16,7 +16,7 @@ spring:
     baseline-version: 0
     baseline-description: "init"
 server:
-  port: 0
+  port: 9003
 eureka:
   client:
     serviceUrl:

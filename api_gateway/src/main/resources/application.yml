@@ -7,12 +7,13 @@ spring:
         locator:
           enabled: true #для корректной работы api-gateway
           lower-case-service-id: true #не чувствителен к регистру в названиях сервисов
+  config:
+    import: ${CONFIG_URI:optional:configserver:http://localhost:8888/}
 server:
   port: 8082
 eureka:
   client:
     serviceUrl:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
-application:
-  constraints:
-    secret-key: "aa641fed0dd8893053c23823e1295c4b605b39872f3745f43ac38b4438c9c7fb"
+
+

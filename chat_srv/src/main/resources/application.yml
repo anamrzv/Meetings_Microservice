@@ -2,12 +2,12 @@ spring:
   application:
     name: chat-srv-eureka-client
   datasource:
-    url: jdbc:postgresql://database:5432/chat_db
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5436/chat_db}
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
   flyway:
-    url: jdbc:postgresql://database:5432/chat_db
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5436/chat_db}
     password: 123
     user: postgres
     locations: classpath:db/migration
@@ -16,7 +16,7 @@ spring:
     baseline-version: 0
     baseline-description: "init"
 server:
-  port: 0
+  port: 9005
 eureka:
   client:
     serviceUrl:

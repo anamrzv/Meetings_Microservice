@@ -35,7 +35,7 @@ public class DialogService {
 
     public List<UserEntityDto> getAllUsersByChat(Long chatId) {
         var chat = chatClient.getChat(chatId);
-        return dialogRepository.getChatUserEntitiesByChatId(Objects.requireNonNull(chat.getBody()).id())
+        return dialogRepository.getChatUserEntitiesByChatId(Objects.requireNonNull(chat.getBody()).getId())
                 .stream()
                 .map(chatUser -> userClient.getUserById(chatUser.getUserId()).getBody())
                 .collect(Collectors.toList());

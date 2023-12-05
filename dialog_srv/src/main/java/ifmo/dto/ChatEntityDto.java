@@ -6,5 +6,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
-public record ChatEntityDto(Long id, LocalDateTime creationDate) implements Serializable {
+public class ChatEntityDto implements Serializable {
+    private Long id;
+    private LocalDateTime creationDate;
 }

@@ -23,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "9001:9001"
     environment:
       DATABASE_URL: jdbc:postgresql://user_database:5432/user_db
       DATABASE_NAME: user_db

@@ -11,5 +11,6 @@ FROM openjdk:17
 WORKDIR /usr/src/java-app
 # copy only the artifacts we need from the first stage and discard the rest
 COPY --from=GRADLE_BUILD /usr/src/java-code/build/libs/chat_srv-0.0.1-SNAPSHOT.jar ./chat_srv.jar
+EXPOSE 9005
 # set the startup command to execute the jar
 CMD ["java", "-jar", "chat_srv.jar"]

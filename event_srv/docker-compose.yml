@@ -23,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "9003:9003"
     environment:
       DATABASE_URL: jdbc:postgresql://event_database:5432/event_db
       DATABASE_NAME: event_db

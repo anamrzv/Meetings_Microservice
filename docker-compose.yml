@@ -1,0 +1,265 @@
+services:
+
+  ##### USER SERVICE
+  user_database:
+    image: postgres:latest
+    container_name: user_database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: user_db
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5432:5432"
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+      - ./user_srv/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/create_db.sql
+    networks:
+      - user-network
+
+  user_application:
+    container_name: user_application
+    build:
+      context: ./user_srv
+      dockerfile: Dockerfile
+    ports:
+      - "9001:9001"
+    environment:
+      DATABASE_URL: jdbc:postgresql://user_database:5432/user_db
+      DATABASE_NAME: user_db
+      DATABASE_PASSWORD: 123
+      DATABASE_USER: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      CONFIG_URI: optional:configserver:http://configuration_server:8888
+      EUREKA_URI: http://service_registry_application:8761/eureka/
+    depends_on:
+      user_database:
+        condition: service_healthy
+      configuration_server:
+        condition: service_started
+      service_registry_application:
+        condition: service_started
+    networks:
+      - user-network
+      - backend
+
+  ##### MEETING SERVICE
+  meeting_database:
+    image: postgres:latest
+    container_name: meeting_database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: meeting_db
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5433:5432"
+    volumes:
+      - meeting-db-data:/var/lib/postgresql/data
+      - ./meeting_srv/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/create_db.sql
+    networks:
+      - meeting-network
+
+  meeting_application:
+    container_name: meeting_application
+    depends_on:
+      - meeting_database
+    build:
+      context: ./meeting_srv
+      dockerfile: Dockerfile
+    ports:
+      - "9002:9002"
+    environment:
+      DATABASE_URL: jdbc:postgresql://meeting_database:5432/meeting_db
+      DATABASE_NAME: meeting_db
+      DATABASE_PASSWORD: 123
+      DATABASE_USER: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      CONFIG_URI: optional:configserver:http://configuration_server:8888
+      EUREKA_URI: http://service_registry_application:8761/eureka/
+    networks:
+      - meeting-network
+      - backend
+
+  ##### EVENT SERVICE
+  event_database:
+    image: postgres:latest
+    container_name: event_database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: event_db
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5434:5432"
+    volumes:
+      - event-db-data:/var/lib/postgresql/data
+      - ./event_srv/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/create_db.sql
+    networks:
+      - event-network
+
+  event_application:
+    container_name: event_application
+    depends_on:
+      - event_database
+    build:
+      context: ./event_srv
+      dockerfile: Dockerfile
+    ports:
+      - "9003:9003"
+    environment:
+      DATABASE_URL: jdbc:postgresql://event_database:5432/event_db
+      DATABASE_NAME: event_db
+      DATABASE_PASSWORD: 123
+      DATABASE_USER: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      CONFIG_URI: optional:configserver:http://configuration_server:8888
+      EUREKA_URI: http://service_registry_application:8761/eureka/
+    networks:
+      - event-network
+      - backend
+
+  ##### DIALOG SERVICE
+  dialog_database:
+    image: postgres:latest
+    container_name: dialog_database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: dialog_db
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5435:5432"
+    volumes:
+      - dialog-db-data:/var/lib/postgresql/data
+      - ./dialog_srv/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/create_db.sql
+    networks:
+      - dialog-network
+
+  dialog_application:
+    container_name: dialog_application
+    depends_on:
+      - dialog_database
+    build:
+      context: ./dialog_srv
+      dockerfile: Dockerfile
+    ports:
+      - "9004:9004"
+    environment:
+      DATABASE_URL: jdbc:postgresql://dialog_database:5432/dialog_db
+      DATABASE_NAME: dialog_db
+      DATABASE_PASSWORD: 123
+      DATABASE_USER: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      CONFIG_URI: optional:configserver:http://configuration_server:8888
+      EUREKA_URI: http://service_registry_application:8761/eureka/
+    networks:
+      - dialog-network
+      - backend
+
+  ##### CHAT SERVICE
+  chat_database:
+    image: postgres:latest
+    container_name: chat_database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: chat_db
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5436:5432"
+    volumes:
+      - chat-db-data:/var/lib/postgresql/data
+      - ./chat_srv/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/create_db.sql
+    networks:
+      - chat-network
+
+  chat_application:
+    container_name: chat_application
+    depends_on:
+      - chat_database
+    build:
+      context: ./chat_srv
+      dockerfile: Dockerfile
+    ports:
+      - "9005:9005"
+    environment:
+      DATABASE_URL: jdbc:postgresql://chat_database:5432/chat_db
+      DATABASE_PASSWORD: 123
+      DATABASE_USER: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      CONFIG_URI: optional:configserver:http://configuration_server:8888
+      EUREKA_URI: http://service_registry_application:8761/eureka/
+    networks:
+      - backend
+      - chat-network
+
+  configuration_server:
+    container_name: configuration_server
+    build:
+      context: ./configuration_server
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    networks:
+      - backend
+
+  service_registry_application:
+    container_name: service_registry_application
+    build:
+      context: ./service_registry
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    environment:
+      CONFIG_URI: optional:configserver:http://configuration_server:8888
+      EUREKA_URI: http://service_registry_application:8761/eureka/
+    depends_on:
+      configuration_server:
+        condition: service_started
+    networks:
+      - backend
+
+  api_gateway_application:
+    container_name: api_gateway_application
+    build:
+      context: ./api_gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      CONFIG_URI: optional:configserver:http://configuration_server:8888
+      EUREKA_URI: http://service_registry_application:8761/eureka/
+    depends_on:
+      configuration_server:
+        condition: service_started
+      service_registry_application:
+        condition: service_started
+      user_application:
+        condition: service_started
+      meeting_application:
+        condition: service_started
+      event_application:
+        condition: service_started
+      dialog_application:
+        condition: service_started
+      chat_application:
+        condition: service_started
+    networks:
+      - backend
+
+
+networks:
+  backend:
+  chat-network:
+  dialog-network:
+  event-network:
+  meeting-network:
+  user-network:
+
+volumes:
+  user-db-data:
+  meeting-db-data:
+  event-db-data:
+  dialog-db-data:
+  chat-db-data:

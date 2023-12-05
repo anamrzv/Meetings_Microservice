@@ -23,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "9004:9004"
     environment:
       DATABASE_URL: jdbc:postgresql://dialog_database:5432/dialog_db
       DATABASE_NAME: dialog_db

@@ -23,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "9002:9002"
     environment:
       DATABASE_URL: jdbc:postgresql://meeting_database:5432/meeting_db
       DATABASE_NAME: meeting_db

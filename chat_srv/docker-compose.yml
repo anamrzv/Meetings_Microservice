@@ -23,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "9005:9005"
     environment:
       DATABASE_URL: jdbc:postgresql://chat_database:5432/chat_db
       DATABASE_NAME: chat_db
