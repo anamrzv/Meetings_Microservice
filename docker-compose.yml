@@ -17,8 +17,8 @@ services:
     networks:
       - user-network
 
-  user_application:
-    container_name: user_application
+  user-application:
+    container_name: user-application
     build:
       context: ./user_srv
       dockerfile: Dockerfile
@@ -30,15 +30,17 @@ services:
       DATABASE_PASSWORD: 123
       DATABASE_USER: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
-      CONFIG_URI: optional:configserver:http://configuration_server:8888
-      EUREKA_URI: http://service_registry_application:8761/eureka/
+      CONFIG_URI: optional:configserver:http://configuration-server:8888
+      EUREKA_URI: http://service-registry:8761/eureka/
     depends_on:
       user_database:
         condition: service_healthy
-      configuration_server:
+      configuration-server:
         condition: service_started
-      service_registry_application:
+      service-registry:
         condition: service_started
+    links:
+      - service-registry
     networks:
       - user-network
       - backend
@@ -60,8 +62,8 @@ services:
     networks:
       - meeting-network
 
-  meeting_application:
-    container_name: meeting_application
+  meeting-application:
+    container_name: meeting-application
     depends_on:
       - meeting_database
     build:
@@ -75,8 +77,10 @@ services:
       DATABASE_PASSWORD: 123
       DATABASE_USER: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
-      CONFIG_URI: optional:configserver:http://configuration_server:8888
-      EUREKA_URI: http://service_registry_application:8761/eureka/
+      CONFIG_URI: optional:configserver:http://configuration-server:8888
+      EUREKA_URI: http://service-registry:8761/eureka/
+    links:
+      - service-registry
     networks:
       - meeting-network
       - backend
@@ -98,8 +102,8 @@ services:
     networks:
       - event-network
 
-  event_application:
-    container_name: event_application
+  event-application:
+    container_name: event-application
     depends_on:
       - event_database
     build:
@@ -113,8 +117,10 @@ services:
       DATABASE_PASSWORD: 123
       DATABASE_USER: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
-      CONFIG_URI: optional:configserver:http://configuration_server:8888
-      EUREKA_URI: http://service_registry_application:8761/eureka/
+      CONFIG_URI: optional:configserver:http://configuration-server:8888
+      EUREKA_URI: http://service-registry:8761/eureka/
+    links:
+      - service-registry
     networks:
       - event-network
       - backend
@@ -136,8 +142,8 @@ services:
     networks:
       - dialog-network
 
-  dialog_application:
-    container_name: dialog_application
+  dialog-application:
+    container_name: dialog-application
     depends_on:
       - dialog_database
     build:
@@ -151,8 +157,10 @@ services:
       DATABASE_PASSWORD: 123
       DATABASE_USER: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
-      CONFIG_URI: optional:configserver:http://configuration_server:8888
-      EUREKA_URI: http://service_registry_application:8761/eureka/
+      CONFIG_URI: optional:configserver:http://configuration-server:8888
+      EUREKA_URI: http://service-registry:8761/eureka/
+    links:
+      - service-registry
     networks:
       - dialog-network
       - backend
@@ -174,8 +182,8 @@ services:
     networks:
       - chat-network
 
-  chat_application:
-    container_name: chat_application
+  chat-application:
+    container_name: chat-application
     depends_on:
       - chat_database
     build:
@@ -188,14 +196,16 @@ services:
       DATABASE_PASSWORD: 123
       DATABASE_USER: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
-      CONFIG_URI: optional:configserver:http://configuration_server:8888
-      EUREKA_URI: http://service_registry_application:8761/eureka/
+      CONFIG_URI: optional:configserver:http://configuration-server:8888
+      EUREKA_URI: http://service-registry:8761/eureka/
+    links:
+      - service-registry
     networks:
       - backend
       - chat-network
 
-  configuration_server:
-    container_name: configuration_server
+  configuration-server:
+    container_name: configuration-server
     build:
       context: ./configuration_server
       dockerfile: Dockerfile
@@ -204,46 +214,46 @@ services:
     networks:
       - backend
 
-  service_registry_application:
-    container_name: service_registry_application
+  service-registry:
+    container_name: service-registry
     build:
       context: ./service_registry
       dockerfile: Dockerfile
     ports:
       - "8761:8761"
     environment:
-      CONFIG_URI: optional:configserver:http://configuration_server:8888
-      EUREKA_URI: http://service_registry_application:8761/eureka/
+      CONFIG_URI: optional:configserver:http://configuration-server:8888
+      EUREKA_URI: http://service-registry:8761/eureka/
     depends_on:
-      configuration_server:
+      configuration-server:
         condition: service_started
     networks:
       - backend
 
-  api_gateway_application:
-    container_name: api_gateway_application
+  api-gateway-application:
+    container_name: api-gateway-application
     build:
       context: ./api_gateway
       dockerfile: Dockerfile
     ports:
       - "8082:8082"
     environment:
-      CONFIG_URI: optional:configserver:http://configuration_server:8888
-      EUREKA_URI: http://service_registry_application:8761/eureka/
+      CONFIG_URI: optional:configserver:http://configuration-server:8888
+      EUREKA_URI: http://service-registry:8761/eureka/
     depends_on:
-      configuration_server:
+      configuration-server:
         condition: service_started
-      service_registry_application:
+      service-registry:
         condition: service_started
-      user_application:
+      user-application:
         condition: service_started
-      meeting_application:
+      meeting-application:
         condition: service_started
-      event_application:
+      event-application:
         condition: service_started
-      dialog_application:
+      dialog-application:
         condition: service_started
-      chat_application:
+      chat-application:
         condition: service_started
     networks:
       - backend

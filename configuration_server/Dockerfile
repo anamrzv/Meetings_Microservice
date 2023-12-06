@@ -11,6 +11,6 @@ FROM openjdk:17
 WORKDIR /usr/src/java-app
 # copy only the artifacts we need from the first stage and discard the rest
 COPY --from=GRADLE_BUILD /usr/src/java-code/build/libs/configuration_server-0.0.1-SNAPSHOT.jar ./configuration_server.jar
-EXPOSE 9001
+EXPOSE 8888
 # set the startup command to execute the jar
 CMD ["java", "-jar", "configuration_server.jar"]
