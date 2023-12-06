@@ -21,8 +21,7 @@ public class MessageController {
 
     private final ChatService chatService;
 
-    @Autowired
-    private UserClient userClient;
+    private final UserClient userClient;
 
     @GetMapping(value = "/{chat_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})

@@ -8,10 +8,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableFeignClients
 @EnableDiscoveryClient
-public class ChatUserSrvApplication {
+public class DialogSrvApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ChatUserSrvApplication.class, args);
+        SpringApplication.run(DialogSrvApplication.class, args);
     }
 
 }

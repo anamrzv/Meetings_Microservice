@@ -26,6 +26,18 @@ public class GatewayConfig {
                 .route("auth-route", r -> r.path("/api/v1/auth/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://user-srv-eureka-client"))
+                .route("chat-route", r -> r.path("/api/v1/chats/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://chat-srv-eureka-client"))
+                .route("dialog-route", r -> r.path("/api/v1/dialog/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://dialog-srv-eureka-client"))
+                .route("event-route", r -> r.path("/api/v1/events/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://event-srv-eureka-client"))
+                .route("meeting-route", r -> r.path("/api/v1/meetings/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://meeting-srv-eureka-client"))
                 .build();
     }
 }
