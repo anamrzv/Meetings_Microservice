@@ -10,8 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface UserClient {
 
     @GetMapping("/{login}")
-    public ResponseEntity<UserEntityDto> getUser(@PathVariable String login);
+    ResponseEntity<UserEntityDto> getUser(@PathVariable String login);
 
     @GetMapping("/by/id/{id}")
-    public ResponseEntity<UserEntityDto> getUserById(@PathVariable Long id);
+    ResponseEntity<UserEntityDto> getUserById(@PathVariable Long id);
+
+    default ResponseEntity<UserEntityDto> getUserFallback() {
+        return ResponseEntity.internalServerError().body(null);
+    }
+
 }

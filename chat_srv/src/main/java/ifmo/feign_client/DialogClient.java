@@ -16,6 +16,10 @@ public interface DialogClient {
     @GetMapping("/")
     ResponseEntity<List<ChatEntityDto>> getAllChatsByUser(@RequestHeader("Username") String userLogin);
 
+    default ResponseEntity<List<ChatEntityDto>> getAllChatsByUserFallback() {
+        return ResponseEntity.internalServerError().body(null);
+    }
+
     @GetMapping("/users/{id}")
     ResponseEntity<List<UserEntityDto>> getAllUsersByChat(@PathVariable Long id);
 

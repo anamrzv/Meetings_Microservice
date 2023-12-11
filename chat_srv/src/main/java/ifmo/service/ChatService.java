@@ -5,6 +5,7 @@ import ifmo.dto.DialogEntityDto;
 import ifmo.dto.MessageDTO;
 import ifmo.dto.UserEntityDto;
 import ifmo.exceptions.CustomExistsException;
+import ifmo.exceptions.CustomInternalException;
 import ifmo.exceptions.CustomNotFoundException;
 import ifmo.feign_client.DialogClient;
 import ifmo.feign_client.UserClient;
@@ -15,7 +16,8 @@ import ifmo.repository.MessageRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final UserClient userClient;
     private final DialogClient dialogClient;
+    private final CircuitBreakerFactory circuitBreakerFactory;
 
     public Page<MessageDTO> getAllMessagesByChatId(Long id, Pageable pageable) {
         var chat = chatRepository.getChatEntityById(id).orElseThrow(() -> new CustomNotFoundException("Чата с таким id не существует"));
@@ -57,10 +60,17 @@ public class ChatService {
 
     @Transactional
     public ChatEntityDto createChat(String firstLogin, String secondLogin, String message) {
-        var firstUser = userClient.getUser(firstLogin);
-        var secondUser = userClient.getUser(secondLogin);
+        CircuitBreaker breaker = circuitBreakerFactory.create("circuitbreaker");
+        var firstUserResponse = breaker.run(() -> userClient.getUser(firstLogin), throwable -> userClient.getUserFallback());
+        var secondUserResponse = breaker.run(() -> userClient.getUser(secondLogin), throwable -> userClient.getUserFallback());
+        var chatResponse = breaker.run(() -> dialogClient.getAllChatsByUser(firstLogin), throwable -> dialogClient.getAllChatsByUserFallback());
+        if (firstUserResponse.getStatusCode().is5xxServerError() || secondUserResponse.getStatusCode().is5xxServerError() || chatResponse.getStatusCode().is5xxServerError())
+            throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
 
-        var existingChats = dialogClient.getAllChatsByUser(firstLogin).getBody();
+        var firstUser = firstUserResponse.getBody();
+        var secondUser = secondUserResponse.getBody();
+        var existingChats = chatResponse.getBody();
+
         if (existingChats == null) throw new CustomNotFoundException("Ошибка при создании чата");
         var found = existingChats.stream()
                 .filter(chatDTO -> Objects.requireNonNull(dialogClient.getAllUsersByChat(chatDTO.getId())
@@ -73,12 +83,12 @@ public class ChatService {
         if (found.isPresent()) throw new CustomExistsException("Чат между пользователями уже существует");
 
         var chatEntity = chatRepository.save(new ChatEntity());
-        dialogClient.saveChatUser(new DialogEntityDto(chatEntity.getId(), Objects.requireNonNull(firstUser.getBody()).getId()));
-        dialogClient.saveChatUser(new DialogEntityDto(chatEntity.getId(), Objects.requireNonNull(secondUser.getBody()).getId()));
+        dialogClient.saveChatUser(new DialogEntityDto(chatEntity.getId(), Objects.requireNonNull(firstUser).getId()));
+        dialogClient.saveChatUser(new DialogEntityDto(chatEntity.getId(), Objects.requireNonNull(secondUser).getId()));
 
         MessageEntity newMessage = new MessageEntity();
         newMessage.setContent(message);
-        newMessage.setSender(Objects.requireNonNull(firstUser.getBody()).getId());
+        newMessage.setSender(Objects.requireNonNull(firstUser).getId());
         newMessage.setChat(chatEntity);
         messageRepository.save(newMessage);
 

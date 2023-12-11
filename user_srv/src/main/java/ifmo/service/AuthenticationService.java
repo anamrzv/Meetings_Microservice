@@ -36,7 +36,6 @@ public class AuthenticationService {
                 .build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public AuthenticationResponse registerAdmin(RegisterRequest req) {
         try {
             var user = UserEntity.builder()

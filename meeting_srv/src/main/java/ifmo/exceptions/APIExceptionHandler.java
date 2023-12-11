@@ -15,23 +15,10 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class APIExceptionHandler {
-    @ExceptionHandler(value = CustomExistsException.class)
-    public ResponseEntity<Object> handleCustomExistsExceptions(CustomExistsException customException) {
-        HttpStatus badRequest = HttpStatus.CONFLICT;
-        ExceptionDTO exceptionDTO = new ExceptionDTO(customException.getMessage(), badRequest, LocalDateTime.now());
-        return new ResponseEntity<>(exceptionDTO, badRequest);
-    }
 
     @ExceptionHandler(value = CustomInternalException.class)
     public ResponseEntity<Object> handleCustomInternalExceptions(CustomInternalException customException) {
         HttpStatus badRequest = HttpStatus.INTERNAL_SERVER_ERROR;
-        ExceptionDTO exceptionDTO = new ExceptionDTO(customException.getMessage(), badRequest, LocalDateTime.now());
-        return new ResponseEntity<>(exceptionDTO, badRequest);
-    }
-
-    @ExceptionHandler(value = CustomNotFoundException.class)
-    public ResponseEntity<Object> handleCustomNotFoundExceptions(CustomNotFoundException customException) {
-        HttpStatus badRequest = HttpStatus.NOT_FOUND;
         ExceptionDTO exceptionDTO = new ExceptionDTO(customException.getMessage(), badRequest, LocalDateTime.now());
         return new ResponseEntity<>(exceptionDTO, badRequest);
     }

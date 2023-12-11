@@ -14,4 +14,8 @@ public interface UserClient {
 
     @GetMapping("/by/id/{id}")
     ResponseEntity<UserEntityDto> getUserById(@PathVariable Long id);
+
+    default ResponseEntity<UserEntityDto> getUserFallback() {
+        return ResponseEntity.internalServerError().body(null);
+    }
 }
