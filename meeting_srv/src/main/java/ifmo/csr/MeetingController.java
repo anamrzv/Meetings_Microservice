@@ -18,7 +18,7 @@ public class MeetingController {
     private final MeetingService meetingService;
 
     @PostMapping(value = "/{event_id}",
-            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<HttpStatus> addEventToInteresting(@PathVariable(value = "event_id") @Min(1) long eventId,
                                                              @RequestHeader("Username") String userLogin) {
         meetingService.addEventToInteresting(eventId, userLogin);

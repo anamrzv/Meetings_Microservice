@@ -14,3 +14,9 @@ create table if not exists event
     image           text        not null,
     start_date      timestamp   not null
 );
+
+create table if not exists characteristic_event
+(
+    characteristic_id integer references characteristic (id),
+    event_id          integer references event (id)
+);
