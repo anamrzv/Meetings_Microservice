@@ -60,7 +60,7 @@ public class ChatService {
 
     @Transactional
     public ChatEntityDto createChat(String firstLogin, String secondLogin, String message) {
-        CircuitBreaker breaker = circuitBreakerFactory.create("circuitbreaker");
+        CircuitBreaker breaker = circuitBreakerFactory.create("eren");
         var firstUserResponse = breaker.run(() -> userClient.getUser(firstLogin), throwable -> userClient.getUserFallback());
         var secondUserResponse = breaker.run(() -> userClient.getUser(secondLogin), throwable -> userClient.getUserFallback());
         var chatResponse = breaker.run(() -> dialogClient.getAllChatsByUser(firstLogin), throwable -> dialogClient.getAllChatsByUserFallback());

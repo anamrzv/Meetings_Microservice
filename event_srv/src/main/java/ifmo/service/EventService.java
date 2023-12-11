@@ -9,7 +9,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +25,7 @@ public class EventService {
         return eventRepository.getEventEntitiesByAgeLimitBefore(18).stream().map(EventEntityDto::new).collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasRole('ADULT')")
+    //@PreAuthorize("hasRole('ADULT')")
     public Page<EventEntityDto> findAll(Pageable pageable) {
         return eventRepository.findAll(pageable).map(EventEntityDto::new);
     }
@@ -45,7 +44,7 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void setCharacteristicsToEvent(Long id, Set<String> chars) {
         var eventEntity = eventRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("Мероприятия с таким id не существует"));
@@ -55,7 +54,7 @@ public class EventService {
         eventRepository.save(eventEntity);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void removeCharacteristicsFromEvent(Long id, Set<String> chars) {
         var eventEntity = eventRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("Мероприятия с таким id не существует"));
@@ -65,13 +64,13 @@ public class EventService {
         eventRepository.save(eventEntity);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public EventEntityDto addEvent(EventEntityDto eventDTO) {
         var addedEvent = eventRepository.save(new EventEntity(eventDTO.getName(), eventDTO.getAgeLimit(), eventDTO.getImage(), eventDTO.getDescription(), eventDTO.getMaxOfVisitors(), eventDTO.getStartDate()));
         return new EventEntityDto(addedEvent);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public EventEntityDto updateEvent(long id, EventEntityDto eventDTO) {
         var oldEvent = eventRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("Мероприятия с таким id не существует"));
         oldEvent.setAgeLimit(eventDTO.getAgeLimit());

@@ -8,7 +8,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
-
 public class EventSrvApplication {
 
     public static void main(String[] args) {

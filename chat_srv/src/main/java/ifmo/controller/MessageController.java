@@ -48,7 +48,7 @@ public class MessageController {
     private ResponseEntity<MessageDTO> sendMessageToChat(@RequestHeader("Username") String userLogin,
                                                          @PathVariable(value = "chat_id") long chatId,
                                                          @RequestBody String message) {
-        CircuitBreaker breaker = circuitBreakerFactory.create("circuitbreaker");
+        CircuitBreaker breaker = circuitBreakerFactory.create("eren");
         var sender = breaker.run(() -> userClient.getUser(userLogin), throwable -> userClient.getUserFallback());
         if (sender.getStatusCode().is5xxServerError())
             throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");

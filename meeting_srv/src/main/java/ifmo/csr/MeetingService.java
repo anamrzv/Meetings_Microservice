@@ -25,7 +25,7 @@ public class MeetingService {
     public void addEventToInteresting(long eventId, String userLogin) {
         MeetingEntity meetingEntity = new MeetingEntity();
 
-        CircuitBreaker breaker = circuitBreakerFactory.create("circuitbreaker");
+        CircuitBreaker breaker = circuitBreakerFactory.create("eren");
         var userResponse = breaker.run(() -> userClient.getUser(userLogin), throwable -> userClient.getUserFallback());
         if (userResponse.getStatusCode().is5xxServerError()) throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
 
@@ -36,7 +36,7 @@ public class MeetingService {
     }
 
     public List<UserEntityDto> getAllUsersByEvent(long eventId) {
-        CircuitBreaker breaker = circuitBreakerFactory.create("circuitbreaker");
+        CircuitBreaker breaker = circuitBreakerFactory.create("eren");
 
         var meetingsForEvent = meetingRepository.findMeetingEntitiesByEventId(eventId);
         return meetingsForEvent.stream()
