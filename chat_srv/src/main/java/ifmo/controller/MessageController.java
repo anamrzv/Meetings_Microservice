@@ -2,10 +2,12 @@ package ifmo.controller;
 
 import ifmo.dto.ChatEntityDto;
 import ifmo.dto.MessageDTO;
+import ifmo.exceptions.CustomInternalException;
 import ifmo.feign_client.UserClient;
 import ifmo.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -22,6 +24,8 @@ public class MessageController {
     private final ChatService chatService;
 
     private final UserClient userClient;
+
+    private final CircuitBreakerFactory circuitBreakerFactory;
 
     @GetMapping(value = "/{chat_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -44,7 +48,10 @@ public class MessageController {
     private ResponseEntity<MessageDTO> sendMessageToChat(@RequestHeader("Username") String userLogin,
                                                          @PathVariable(value = "chat_id") long chatId,
                                                          @RequestBody String message) {
-        var sender = userClient.getUser(userLogin);
+        CircuitBreaker breaker = circuitBreakerFactory.create("eren");
+        var sender = breaker.run(() -> userClient.getUser(userLogin), throwable -> userClient.getUserFallback());
+        if (sender.getStatusCode().is5xxServerError())
+            throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
         var msgDto = chatService.addMessageToChat(chatId, Objects.requireNonNull(sender.getBody()).getId(), message);
         return ResponseEntity.ok().body(msgDto);
     }

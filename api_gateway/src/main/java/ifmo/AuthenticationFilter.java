@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -21,6 +22,8 @@ public class AuthenticationFilter implements GatewayFilter {
     @Autowired
     private JwtService jwtService;
 
+    private static final int START_OF_JWT_TOKEN = 7;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
@@ -29,12 +32,15 @@ public class AuthenticationFilter implements GatewayFilter {
             if (authMissing(request)) {
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
-            final String token = request.getHeaders().getOrEmpty("Authorization").get(0);
-            if (!jwtService.isTokenValid(token, request.getHeaders().getOrEmpty("Username").get(0))) {
+            final String authHeader = request.getHeaders().getOrEmpty("Authorization").get(0);
+            String token = authHeader.substring(START_OF_JWT_TOKEN);
+            if (!jwtService.isTokenValid(token)) {
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
+
+            request.mutate().header("Username", jwtService.extractUserLogin(token)).build();
         }
-        return chain.filter(exchange);
+        return chain.filter(exchange.mutate().request(request).build());
     }
 
     private boolean authMissing(ServerHttpRequest request) {

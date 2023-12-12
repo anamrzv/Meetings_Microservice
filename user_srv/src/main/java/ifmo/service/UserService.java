@@ -32,6 +32,11 @@ public class UserService {
         return new UserEntityDto(user);
     }
 
+    public UserEntityDto getUserById(long id) {
+        var user = userRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("Юзер не найден"));
+        return new UserEntityDto(user);
+    }
+
     @Transactional
     public UserEntity createUserWithProfile(RegisterRequest req) {
         try {

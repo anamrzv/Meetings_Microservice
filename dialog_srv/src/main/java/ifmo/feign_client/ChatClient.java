@@ -11,4 +11,7 @@ public interface ChatClient {
     @GetMapping("/entity/{chat_id}")
     ResponseEntity<ChatEntityDto> getChat(@PathVariable(value = "chat_id") long chatId);
 
+    default ResponseEntity<ChatEntityDto> getChatFallback() {
+        return ResponseEntity.internalServerError().body(null);
+    }
 }

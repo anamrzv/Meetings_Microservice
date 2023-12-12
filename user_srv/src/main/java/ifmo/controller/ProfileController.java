@@ -19,7 +19,7 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping(value = "/{profile_id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<ProfileEntityDto> showUserByProfile(@PathVariable(value = "profile_id") @Min(1) long profileId) {
+    public ResponseEntity<ProfileEntityDto> showProfileById(@PathVariable(value = "profile_id") @Min(1) long profileId) {
         var gotProfile = profileService.showUserProfile(profileId);
         return ResponseEntity.ok().body(gotProfile);
     }
@@ -27,7 +27,7 @@ public class ProfileController {
     @PutMapping(value = "/",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    private ResponseEntity<ProfileEntityDto> updatedProfile(@Valid @RequestBody ProfileEntityDto changedProfile,
+    private ResponseEntity<ProfileEntityDto> updateProfile(@Valid @RequestBody ProfileEntityDto changedProfile,
                                                             @RequestHeader("Username") String userLogin) {
         var updatedUserProfile = profileService.updateUserProfile(userLogin, changedProfile);
         return ResponseEntity.ok().body(updatedUserProfile);

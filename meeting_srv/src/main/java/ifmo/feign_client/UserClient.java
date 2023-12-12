@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "user-srv-eureka-client", path = "/api/v1/user")
+@FeignClient(name = "user-srv-eureka-client", url = "127.0.0.1:9001/api/v1/users/maria")
 public interface UserClient {
 
     @GetMapping("/{login}")
@@ -14,4 +14,8 @@ public interface UserClient {
 
     @GetMapping("/by/id/{id}")
     ResponseEntity<UserEntityDto> getUserById(@PathVariable Long id);
+
+    default ResponseEntity<UserEntityDto> getUserFallback() {
+        return ResponseEntity.internalServerError().body(null);
+    }
 }
