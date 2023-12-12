@@ -8,12 +8,11 @@ import ifmo.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -29,9 +28,8 @@ public class MessageController {
 
     @GetMapping(value = "/{chat_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    private ResponseEntity<Page<MessageDTO>> getAllChatMessages(@PathVariable(value = "chat_id") long chatId) {
-        Pageable wholePage = Pageable.unpaged();
-        var messages = chatService.getAllMessagesByChatId(chatId, wholePage);
+    private ResponseEntity<List<MessageDTO>> getAllChatMessages(@PathVariable(value = "chat_id") long chatId) {
+        List<MessageDTO> messages = chatService.getAllMessagesByChatId(chatId);
         return ResponseEntity.ok().body(messages);
     }
 
@@ -42,7 +40,7 @@ public class MessageController {
         return ResponseEntity.ok().body(chat);
     }
 
-    @PostMapping(value = "/{chat_id}",
+    @PostMapping(value = "/msg/{chat_id}",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<MessageDTO> sendMessageToChat(@RequestHeader("Username") String userLogin,

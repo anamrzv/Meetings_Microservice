@@ -18,11 +18,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +33,9 @@ public class ChatService {
     private final DialogClient dialogClient;
     private final CircuitBreakerFactory circuitBreakerFactory;
 
-    public Page<MessageDTO> getAllMessagesByChatId(Long id, Pageable pageable) {
+    public List<MessageDTO> getAllMessagesByChatId(Long id) {
         var chat = chatRepository.getChatEntityById(id).orElseThrow(() -> new CustomNotFoundException("Чата с таким id не существует"));
-        return messageRepository.findAllByChat(chat, pageable).map(MessageDTO::new);
+        return messageRepository.findAllByChat(chat).stream().map(MessageDTO::new).collect(Collectors.toList());
     }
 
     public ChatEntityDto getChatById(Long id) {
@@ -71,16 +71,17 @@ public class ChatService {
         var secondUser = secondUserResponse.getBody();
         var existingChats = chatResponse.getBody();
 
-        if (existingChats == null) throw new CustomNotFoundException("Ошибка при создании чата");
-        var found = existingChats.stream()
-                .filter(chatDTO -> Objects.requireNonNull(dialogClient.getAllUsersByChat(chatDTO.getId())
-                                .getBody())
-                        .contains(new UserEntityDto(1L, firstLogin)) &&
-                        Objects.requireNonNull(dialogClient.getAllUsersByChat(chatDTO.getId())
-                                        .getBody())
-                                .contains(new UserEntityDto(1L, secondLogin)))
-                .findFirst();
-        if (found.isPresent()) throw new CustomExistsException("Чат между пользователями уже существует");
+        if (existingChats != null) {
+            var found = existingChats.stream()
+                    .filter(chatDTO -> Objects.requireNonNull(dialogClient.getAllUsersByChat(chatDTO.getId())
+                                    .getBody())
+                            .contains(new UserEntityDto(1L, firstLogin)) &&
+                            Objects.requireNonNull(dialogClient.getAllUsersByChat(chatDTO.getId())
+                                            .getBody())
+                                    .contains(new UserEntityDto(1L, secondLogin)))
+                    .findFirst();
+            if (found.isPresent()) throw new CustomExistsException("Чат между пользователями уже существует");
+        }
 
         var chatEntity = chatRepository.save(new ChatEntity());
         dialogClient.saveChatUser(new DialogEntityDto(chatEntity.getId(), Objects.requireNonNull(firstUser).getId()));
@@ -92,6 +93,8 @@ public class ChatService {
         newMessage.setChat(chatEntity);
         messageRepository.save(newMessage);
 
-        return new ChatEntityDto(chatEntity);
+        var res = chatRepository.getChatEntityById(chatEntity.getId()).get();
+
+        return new ChatEntityDto(res);
     }
 }

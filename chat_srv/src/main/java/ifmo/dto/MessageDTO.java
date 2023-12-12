@@ -4,14 +4,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import ifmo.model.MessageEntity;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Value
 @AllArgsConstructor
-public class MessageDTO implements Serializable {
+@Getter
+@Setter
+public class MessageDTO {
     Long id;
     @NotBlank(message = "У сообщения должно быть содержание")
     String content;
