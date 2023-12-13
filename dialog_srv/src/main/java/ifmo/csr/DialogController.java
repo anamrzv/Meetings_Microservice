@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -20,23 +21,22 @@ public class DialogController {
 
     @GetMapping(value = "/",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    private ResponseEntity<List<ChatEntityDto>> getAllChatsByUser(@RequestHeader("Username") String userLogin) {
+    private Mono<ResponseEntity<List<ChatEntityDto>>> getAllChatsByUser(@RequestHeader("Username") String userLogin) {
         var chats = dialogService.getAllChatsByUserLogin(userLogin);
-        return ResponseEntity.ok().body(chats);
+        return Mono.just(ResponseEntity.ok().body(chats));
     }
 
     @PostMapping(value = "/",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    private ResponseEntity<HttpStatus> saveChatUser(@RequestBody DialogEntityDto dto) {
+    private Mono<ResponseEntity<HttpStatus>> saveChatUser(@RequestBody DialogEntityDto dto) {
         dialogService.saveChatUser(dto.getChatId(), dto.getUserId());
-        return ResponseEntity.ok().build();
+        return Mono.just(ResponseEntity.ok().build());
     }
 
     @GetMapping(value = "/users/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    private ResponseEntity<List<UserEntityDto>> getAllUsersByChat(@PathVariable Long id) {
+    private Mono<ResponseEntity<List<UserEntityDto>>> getAllUsersByChat(@PathVariable Long id) {
         var users = dialogService.getAllUsersByChat(id);
-        return ResponseEntity.ok().body(users);
+        return Mono.just(ResponseEntity.ok().body(users));
     }
 }
-
