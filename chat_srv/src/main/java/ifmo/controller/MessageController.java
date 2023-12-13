@@ -5,6 +5,7 @@ import ifmo.dto.MessageDTO;
 import ifmo.exceptions.CustomInternalException;
 import ifmo.feign_client.UserClient;
 import ifmo.service.ChatService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
@@ -45,9 +46,10 @@ public class MessageController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<MessageDTO> sendMessageToChat(@RequestHeader("Username") String userLogin,
                                                          @PathVariable(value = "chat_id") long chatId,
-                                                         @RequestBody String message) {
+                                                         @RequestBody String message,
+                                                         HttpServletRequest request) {
         CircuitBreaker breaker = circuitBreakerFactory.create("eren");
-        var sender = breaker.run(() -> userClient.getUser(userLogin), throwable -> userClient.getUserFallback());
+        var sender = breaker.run(() -> userClient.getUser(userLogin, request.getHeader("Authorization")), throwable -> userClient.getUserFallback());
         if (sender.getStatusCode().is5xxServerError())
             throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
         var msgDto = chatService.addMessageToChat(chatId, Objects.requireNonNull(sender.getBody()).getId(), message);
@@ -59,8 +61,9 @@ public class MessageController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<ChatEntityDto> createChatWithUser(@PathVariable(value = "second_user") String secondUserLogin,
                                                             @RequestHeader("Username") String userLogin,
-                                                            @RequestBody String message) {
-        var chat = chatService.createChat(userLogin, secondUserLogin, message);
+                                                            @RequestBody String message,
+                                                            HttpServletRequest request) {
+        var chat = chatService.createChat(userLogin, secondUserLogin, message, request);
         return ResponseEntity.ok().body(chat);
     }
 }
