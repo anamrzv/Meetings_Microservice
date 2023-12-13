@@ -26,6 +26,7 @@ public class MeetingService {
         MeetingEntity meetingEntity = new MeetingEntity();
 
         CircuitBreaker breaker = circuitBreakerFactory.create("eren");
+        userClient.getUser(userLogin);
         var userResponse = breaker.run(() -> userClient.getUser(userLogin), throwable -> userClient.getUserFallback());
         if (userResponse.getStatusCode().is5xxServerError()) throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
 

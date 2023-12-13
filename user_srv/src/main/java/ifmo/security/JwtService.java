@@ -8,14 +8,17 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -24,6 +27,7 @@ public class JwtService {
     private String SECRET_KEY;
 
     private final static int ONE_HOUR_IN_MILLIS = 1000 * 60 * 60;
+    public static final String ROLES = "ROLES";
 
     private Claims extractAllClaims(String token) {
         try {
@@ -60,7 +64,13 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        var claims = new HashMap<String, Object>();
+        final List<String> roles = userDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+        claims.put(ROLES, roles);
+        return generateToken(claims, userDetails);
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -78,5 +88,9 @@ public class JwtService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public List<String> extractRole(String token) {
+        return extractClaim(token, claims -> (List<String>) claims.get(ROLES));
     }
 }
