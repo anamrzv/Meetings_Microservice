@@ -36,7 +36,8 @@ public class MessageController {
 
     @GetMapping(value = "/entity/{chat_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    private ResponseEntity<ChatEntityDto> getChat(@PathVariable(value = "chat_id") long chatId) {
+    private ResponseEntity<ChatEntityDto> getChat(@PathVariable(value = "chat_id") long chatId,
+                                                  @RequestHeader(value = "Authorization") String authorizationHeader) {
         var chat = chatService.getChatById(chatId);
         return ResponseEntity.ok().body(chat);
     }

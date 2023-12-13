@@ -12,10 +12,8 @@ public interface UserClient {
 
     @GetMapping("/{login}")
     ResponseEntity<UserEntityDto> getUser(@PathVariable String login, @RequestHeader(value = "Authorization") String authorizationHeader);
-
     @GetMapping("/by/id/{id}")
     ResponseEntity<UserEntityDto> getUserById(@PathVariable Long id, @RequestHeader(value = "Authorization") String authorizationHeader);
-
 
     default ResponseEntity<UserEntityDto> getUserFallback() {
         return ResponseEntity.internalServerError().body(null);

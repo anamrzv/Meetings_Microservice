@@ -28,7 +28,8 @@ public class EventController {
     @GetMapping(value = "/",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<Page<EventEntityDto>> getAllEvents(@RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
-                                                              @RequestParam(value = "limit", defaultValue = "50") @Min(1) @Max(100) Integer limit) {
+                                                              @RequestParam(value = "limit", defaultValue = "50") @Min(1) @Max(100) Integer limit
+    ) {
         var events = eventService.findAll(PageRequest.of(offset, limit));
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("X-Total-Count", String.valueOf(events.getTotalElements()));
