@@ -1,6 +1,7 @@
 package ifmo.csr;
 
 import ifmo.dto.UserEntityDto;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,15 +21,17 @@ public class MeetingController {
     @PostMapping(value = "/{event_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<HttpStatus> addEventToInteresting(@PathVariable(value = "event_id") @Min(1) long eventId,
-                                                             @RequestHeader("Username") String userLogin) {
-        meetingService.addEventToInteresting(eventId, userLogin);
+                                                             @RequestHeader("Username") String userLogin,
+                                                             HttpServletRequest request) {
+        meetingService.addEventToInteresting(eventId, userLogin, request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(value = "/{event_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<List<UserEntityDto>> getInterestedUsers(@PathVariable(value = "event_id") @Min(1) long eventId) {
-        var interestedUsers = meetingService.getAllUsersByEvent(eventId);
+    public ResponseEntity<List<UserEntityDto>> getInterestedUsers(@PathVariable(value = "event_id") @Min(1) long eventId,
+                                                                  HttpServletRequest request) {
+        var interestedUsers = meetingService.getAllUsersByEvent(eventId, request);
         return ResponseEntity.ok().body(interestedUsers);
     }
 
