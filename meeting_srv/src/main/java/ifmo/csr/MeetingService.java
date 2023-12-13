@@ -1,6 +1,7 @@
 package ifmo.csr;
 
 import ifmo.dto.UserEntityDto;
+import ifmo.exceptions.CustomExistsException;
 import ifmo.exceptions.CustomInternalException;
 import ifmo.feign_client.UserClient;
 import ifmo.model.MeetingEntity;
@@ -27,13 +28,17 @@ public class MeetingService {
         MeetingEntity meetingEntity = new MeetingEntity();
 
         CircuitBreaker breaker = circuitBreakerFactory.create("eren");
+        //var userResponse = userClient.getUser(userLogin, request.getHeader("Authorization"));
         var userResponse = breaker.run(() -> userClient.getUser(userLogin, request.getHeader("Authorization")), throwable -> userClient.getUserFallback());
         if (userResponse.getStatusCode().is5xxServerError()) throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
 
         var userId = Objects.requireNonNull(userResponse.getBody()).id();
-        meetingEntity.setEventId(eventId);
-        meetingEntity.setUserId(userId);
-        meetingRepository.save(meetingEntity);
+        var existing = meetingRepository.findMeetingEntityByEventIdAndUserId(eventId, userId);
+        if (existing.isEmpty()) {
+            meetingEntity.setEventId(eventId);
+            meetingEntity.setUserId(userId);
+            meetingRepository.save(meetingEntity);
+        } else throw new CustomExistsException("Мероприятие уже добавлено!");
     }
 
     public List<UserEntityDto> getAllUsersByEvent(long eventId, HttpServletRequest request) {
