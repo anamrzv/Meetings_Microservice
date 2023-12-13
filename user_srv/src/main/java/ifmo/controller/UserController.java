@@ -2,7 +2,6 @@ package ifmo.controller;
 
 
 import ifmo.dto.UserEntityDto;
-import ifmo.security.JwtService;
 import ifmo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
