@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -21,28 +22,24 @@ public class DialogController {
 
     @GetMapping(value = "/",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    private ResponseEntity<List<ChatEntityDto>> getAllChatsByUser(@RequestHeader("Username") String userLogin,
-                                                                  @RequestHeader(value = "Authorization") String authorizationHeader,
-                                                                  HttpServletRequest request) {
+    private Mono<ResponseEntity<List<ChatEntityDto>>> getAllChatsByUser(@RequestHeader("Username") String userLogin,
+                                                                        HttpServletRequest request) {
         var chats = dialogService.getAllChatsByUserLogin(userLogin, request);
-        return ResponseEntity.ok().body(chats);
+        return Mono.just(ResponseEntity.ok().body(chats));
     }
 
     @PostMapping(value = "/",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    private ResponseEntity<HttpStatus> saveChatUser(@RequestBody DialogEntityDto dto,
-                                                    @RequestHeader(value = "Authorization") String authorizationHeader) {
+    private Mono<ResponseEntity<HttpStatus>> saveChatUser(@RequestBody DialogEntityDto dto) {
         dialogService.saveChatUser(dto.getChatId(), dto.getUserId());
-        return ResponseEntity.ok().build();
+        return Mono.just(ResponseEntity.ok().build());
     }
 
     @GetMapping(value = "/users/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    private ResponseEntity<List<UserEntityDto>> getAllUsersByChat(@PathVariable Long id,
-                                                                  @RequestHeader(value = "Authorization") String authorizationHeader,
-                                                                  HttpServletRequest request) {
+    private Mono<ResponseEntity<List<UserEntityDto>>> getAllUsersByChat(@PathVariable Long id,
+                                                                        HttpServletRequest request) {
         var users = dialogService.getAllUsersByChat(id, request);
-        return ResponseEntity.ok().body(users);
+        return Mono.just(ResponseEntity.ok().body(users));
     }
 }
-
