@@ -6,6 +6,7 @@ import ifmo.exceptions.CustomInternalException;
 import ifmo.feign_client.ChatClient;
 import ifmo.feign_client.UserClient;
 import ifmo.model.DialogEntity;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
@@ -23,26 +24,24 @@ public class DialogService {
     private final UserClient userClient;
     private final CircuitBreakerFactory circuitBreakerFactory;
 
-    public List<ChatEntityDto> getAllChatsByUserLogin(String userLogin) {
+    public List<ChatEntityDto> getAllChatsByUserLogin(String userLogin, HttpServletRequest request) {
         CircuitBreaker breaker = circuitBreakerFactory.create("eren");
-        var user = breaker.run(() -> userClient.getUser(userLogin), throwable -> userClient.getUserFallback());
-        if (user.getStatusCode().is5xxServerError())
-            throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
+        var user = breaker.run(() -> userClient.getUser(userLogin, request.getHeader("Authorization")), throwable -> userClient.getUserFallback());
+        if (user.getStatusCode().is5xxServerError()) throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
         return dialogRepository.getChatUserEntitiesByUserId(Objects.requireNonNull(user.getBody()).id())
                 .stream()
-                .map(chatUser -> chatClient.getChat(chatUser.getChatId()).getBody())
+                .map(chatUser -> chatClient.getChat(chatUser.getChatId(), request.getHeader("Authorization")).getBody())
                 .collect(Collectors.toList());
     }
 
-    public List<UserEntityDto> getAllUsersByChat(Long chatId) {
+    public List<UserEntityDto> getAllUsersByChat(Long chatId, HttpServletRequest request) {
         CircuitBreaker breaker = circuitBreakerFactory.create("eren");
-        var chat = breaker.run(() -> chatClient.getChat(chatId), throwable -> chatClient.getChatFallback());
-        if (chat.getStatusCode().is5xxServerError())
-            throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
+        var chat = breaker.run(() -> chatClient.getChat(chatId, request.getHeader("Authorization")), throwable -> chatClient.getChatFallback());
+        if (chat.getStatusCode().is5xxServerError()) throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
 
         return dialogRepository.getChatUserEntitiesByChatId(Objects.requireNonNull(chat.getBody()).getId())
                 .stream()
-                .map(chatUser -> userClient.getUserById(chatUser.getUserId()).getBody())
+                .map(chatUser -> userClient.getUserById(chatUser.getUserId(), request.getHeader("Authorization")).getBody())
                 .collect(Collectors.toList());
     }
 

@@ -14,6 +14,7 @@ import ifmo.model.MessageEntity;
 import ifmo.repository.ChatRepository;
 import ifmo.repository.MessageRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
@@ -59,11 +60,11 @@ public class ChatService {
     }
 
     @Transactional
-    public ChatEntityDto createChat(String firstLogin, String secondLogin, String message) {
+    public ChatEntityDto createChat(String firstLogin, String secondLogin, String message, HttpServletRequest request) {
         CircuitBreaker breaker = circuitBreakerFactory.create("eren");
-        var firstUserResponse = breaker.run(() -> userClient.getUser(firstLogin), throwable -> userClient.getUserFallback());
-        var secondUserResponse = breaker.run(() -> userClient.getUser(secondLogin), throwable -> userClient.getUserFallback());
-        var chatResponse = breaker.run(() -> dialogClient.getAllChatsByUser(firstLogin), throwable -> dialogClient.getAllChatsByUserFallback());
+        var firstUserResponse = breaker.run(() -> userClient.getUser(firstLogin, request.getHeader("Authorization")), throwable -> userClient.getUserFallback());
+        var secondUserResponse = breaker.run(() -> userClient.getUser(secondLogin, request.getHeader("Authorization")), throwable -> userClient.getUserFallback());
+        var chatResponse = breaker.run(() -> dialogClient.getAllChatsByUser(firstLogin, request.getHeader("Authorization")), throwable -> dialogClient.getAllChatsByUserFallback());
         if (firstUserResponse.getStatusCode().is5xxServerError() || secondUserResponse.getStatusCode().is5xxServerError() || chatResponse.getStatusCode().is5xxServerError())
             throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
 
@@ -73,10 +74,10 @@ public class ChatService {
 
         if (existingChats != null) {
             var found = existingChats.stream()
-                    .filter(chatDTO -> Objects.requireNonNull(dialogClient.getAllUsersByChat(chatDTO.getId())
+                    .filter(chatDTO -> Objects.requireNonNull(dialogClient.getAllUsersByChat(chatDTO.getId(), request.getHeader("Authorization"))
                                     .getBody())
                             .contains(new UserEntityDto(1L, firstLogin)) &&
-                            Objects.requireNonNull(dialogClient.getAllUsersByChat(chatDTO.getId())
+                            Objects.requireNonNull(dialogClient.getAllUsersByChat(chatDTO.getId(), request.getHeader("Authorization"))
                                             .getBody())
                                     .contains(new UserEntityDto(1L, secondLogin)))
                     .findFirst();
@@ -84,8 +85,8 @@ public class ChatService {
         }
 
         var chatEntity = chatRepository.save(new ChatEntity());
-        dialogClient.saveChatUser(new DialogEntityDto(chatEntity.getId(), Objects.requireNonNull(firstUser).getId()));
-        dialogClient.saveChatUser(new DialogEntityDto(chatEntity.getId(), Objects.requireNonNull(secondUser).getId()));
+        dialogClient.saveChatUser(new DialogEntityDto(chatEntity.getId(), Objects.requireNonNull(firstUser).getId()), request.getHeader("Authorization"));
+        dialogClient.saveChatUser(new DialogEntityDto(chatEntity.getId(), Objects.requireNonNull(secondUser).getId()), request.getHeader("Authorization"));
 
         MessageEntity newMessage = new MessageEntity();
         newMessage.setContent(message);
