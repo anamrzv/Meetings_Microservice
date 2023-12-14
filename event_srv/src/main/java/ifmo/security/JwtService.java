@@ -21,6 +21,7 @@ public class JwtService {
     @Value("${application.constraints.secret-key}")
     private String SECRET_KEY;
     public static final String ROLES = "ROLES";
+    private static final int START_OF_JWT_TOKEN = 7;
 
     private Claims extractAllClaims(String token) {
         try {
@@ -45,11 +46,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String userLogin = extractUserLogin(token);
-        return (userLogin.equals(userDetails.getUsername())) && isTokenValid(token);
-    }
-
     public boolean isTokenValid(String token) {
         return !extractExpiration(token).before(new Date());
     }
@@ -63,6 +59,7 @@ public class JwtService {
     }
 
     public List<String> extractRole(String token) {
-        return extractClaim(token, claims -> (List<String>) claims.get(ROLES));
+        String jwt = token.substring(START_OF_JWT_TOKEN);
+        return extractClaim(jwt, claims -> (List<String>) claims.get(ROLES));
     }
 }
