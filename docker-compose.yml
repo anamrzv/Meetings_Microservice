@@ -34,6 +34,7 @@ services:
       EUREKA_URI: http://service-registry:8761/eureka/
     depends_on:
       - user_database
+      - configuration-server
     links:
       - service-registry
     networks:
@@ -61,6 +62,7 @@ services:
     container_name: meeting-application
     depends_on:
       - meeting_database
+      - configuration-server
     build:
       context: ./meeting_srv
       dockerfile: Dockerfile
@@ -101,6 +103,7 @@ services:
     container_name: event-application
     depends_on:
       - event_database
+      - configuration-server
     build:
       context: ./event_srv
       dockerfile: Dockerfile
@@ -141,6 +144,7 @@ services:
     container_name: dialog-application
     depends_on:
       - dialog_database
+      - configuration-server
     build:
       context: ./dialog_srv
       dockerfile: Dockerfile
@@ -181,6 +185,7 @@ services:
     container_name: chat-application
     depends_on:
       - chat_database
+      - configuration-server
     build:
       context: ./chat_srv
       dockerfile: Dockerfile
@@ -237,19 +242,19 @@ services:
       EUREKA_URI: http://service-registry:8761/eureka/
     depends_on:
       configuration-server:
-        condition: service_started
+        condition: service_completed_successfully
       service-registry:
-        condition: service_started
+        condition: service_completed_successfully
       user-application:
-        condition: service_started
+        condition: service_completed_successfully
       meeting-application:
-        condition: service_started
+        condition: service_completed_successfully
       event-application:
-        condition: service_started
+        condition: service_completed_successfully
       dialog-application:
-        condition: service_started
+        condition: service_completed_successfully
       chat-application:
-        condition: service_started
+        condition: service_completed_successfully
     networks:
       - backend
 
