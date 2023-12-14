@@ -14,15 +14,15 @@ import java.util.List;
 public interface DialogClient {
 
     @GetMapping("/")
-    ResponseEntity<List<ChatEntityDto>> getAllChatsByUser(@RequestHeader("Username") String userLogin);
+    ResponseEntity<List<ChatEntityDto>> getAllChatsByUser(@RequestHeader("Username") String userLogin, @RequestHeader(value = "Authorization") String authorizationHeader);
 
     default ResponseEntity<List<ChatEntityDto>> getAllChatsByUserFallback() {
         return ResponseEntity.internalServerError().body(null);
     }
 
     @GetMapping("/users/{id}")
-    ResponseEntity<List<UserEntityDto>> getAllUsersByChat(@PathVariable Long id);
+    ResponseEntity<List<UserEntityDto>> getAllUsersByChat(@PathVariable Long id, @RequestHeader(value = "Authorization") String authorizationHeader);
 
     @PostMapping("/")
-    ResponseEntity<HttpStatus> saveChatUser(@RequestBody DialogEntityDto dto);
+    ResponseEntity<HttpStatus> saveChatUser(@RequestBody DialogEntityDto dto, @RequestHeader(value = "Authorization") String authorizationHeader);
 }

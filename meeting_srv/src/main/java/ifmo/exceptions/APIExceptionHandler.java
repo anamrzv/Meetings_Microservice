@@ -23,6 +23,20 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(exceptionDTO, badRequest);
     }
 
+    @ExceptionHandler(value = CustomBadRequestException.class)
+    public ResponseEntity<Object> handleCustomBadRequestException(CustomBadRequestException customException) {
+        HttpStatus badRequest = HttpStatus.INTERNAL_SERVER_ERROR;
+        ExceptionDTO exceptionDTO = new ExceptionDTO(customException.getMessage(), badRequest, LocalDateTime.now());
+        return new ResponseEntity<>(exceptionDTO, badRequest);
+    }
+
+    @ExceptionHandler(value = CustomExistsException.class)
+    public ResponseEntity<Object> handleCustomInternalExceptions(CustomExistsException customException) {
+        HttpStatus badRequest = HttpStatus.CONFLICT;
+        ExceptionDTO exceptionDTO = new ExceptionDTO(customException.getMessage(), badRequest, LocalDateTime.now());
+        return new ResponseEntity<>(exceptionDTO, badRequest);
+    }
+
     @ExceptionHandler(value = ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ResponseBody

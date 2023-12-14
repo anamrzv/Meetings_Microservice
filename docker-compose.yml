@@ -33,12 +33,7 @@ services:
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
     depends_on:
-      user_database:
-        condition: service_healthy
-      configuration-server:
-        condition: service_started
-      service-registry:
-        condition: service_started
+      - user_database
     links:
       - service-registry
     networks:
