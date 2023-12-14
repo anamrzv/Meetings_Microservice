@@ -26,7 +26,8 @@ public class DialogService {
     public List<ChatEntityDto> getAllChatsByUserLogin(String userLogin) {
         CircuitBreaker breaker = circuitBreakerFactory.create("eren");
         var user = breaker.run(() -> userClient.getUser(userLogin), throwable -> userClient.getUserFallback());
-        if (user.getStatusCode().is5xxServerError()) throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
+        if (user.getStatusCode().is5xxServerError())
+            throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
         return dialogRepository.getChatUserEntitiesByUserId(Objects.requireNonNull(user.getBody()).id())
                 .stream()
                 .map(chatUser -> chatClient.getChat(chatUser.getChatId()).getBody())
@@ -36,7 +37,8 @@ public class DialogService {
     public List<UserEntityDto> getAllUsersByChat(Long chatId) {
         CircuitBreaker breaker = circuitBreakerFactory.create("eren");
         var chat = breaker.run(() -> chatClient.getChat(chatId), throwable -> chatClient.getChatFallback());
-        if (chat.getStatusCode().is5xxServerError()) throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
+        if (chat.getStatusCode().is5xxServerError())
+            throw new CustomInternalException("Пожалуйста, повторите попытку позже :)");
 
         return dialogRepository.getChatUserEntitiesByChatId(Objects.requireNonNull(chat.getBody()).getId())
                 .stream()

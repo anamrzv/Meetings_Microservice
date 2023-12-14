@@ -1,14 +1,10 @@
 package ifmo.config;
 
 import ifmo.handlers.DialogHandler;
-import ifmo.handlers.RouterFunction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.server.RequestPredicate;
-import org.springframework.web.reactive.function.server.RequestPredicates;
-import org.springframework.web.reactive.function.server.RouterFunctions;
-import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.reactive.function.server.*;
 
 @Configuration
 public class DialogRouter {
@@ -28,6 +24,5 @@ public class DialogRouter {
                 .route(routeToAllChatByUser, dialogHandler::getAllChatsByUser)
                 .andRoute(routeToSaveChatUser, dialogHandler::saveChatUser)
                 .andRoute(routeToAllUsersByChat, dialogHandler::getAllUsersByChat);
-        );
     }
 }
