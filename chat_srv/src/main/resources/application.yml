@@ -24,7 +24,8 @@ eureka:
     serviceUrl:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
   instance:
-    preferIpAddress: true
+    #preferIpAddress: true
+    hostname: ${HOSTNAME:localhost}
 resilience4j.circuitbreaker:
   instances:
     eren:
@@ -34,6 +35,3 @@ resilience4j.circuitbreaker:
       permittedNumberOfCallsInHalfOpenState: 3 # столько максимум раз после ожидания будет вызван сервис для проверки
       minimumNumberOfCalls: 3
       waitDurationInOpenState: 50s
-application:
-  constraints:
-    secret-key: "aa641fed0dd8893053c23823e1295c4b605b39872f3745f43ac38b4438c9c7fb"

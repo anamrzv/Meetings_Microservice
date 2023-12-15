@@ -18,7 +18,7 @@ services:
       - user-network
 
   user-application:
-    container_name: user-application
+    container_name: user-srv-eureka-client
     build:
       context: ./user_srv
       dockerfile: Dockerfile
@@ -32,6 +32,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
+      HOSTNAME: user-srv-eureka-client
     depends_on:
       - user_database
       - configuration-server
@@ -59,7 +60,7 @@ services:
       - meeting-network
 
   meeting-application:
-    container_name: meeting-application
+    container_name: meeting-srv-eureka-client
     depends_on:
       - meeting_database
       - configuration-server
@@ -76,6 +77,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
+      HOSTNAME: meeting-srv-eureka-client
     links:
       - service-registry
     networks:
@@ -100,7 +102,7 @@ services:
       - event-network
 
   event-application:
-    container_name: event-application
+    container_name: event-srv-eureka-client
     depends_on:
       - event_database
       - configuration-server
@@ -117,6 +119,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
+      HOSTNAME: event-srv-eureka-client
     links:
       - service-registry
     networks:
@@ -141,7 +144,7 @@ services:
       - dialog-network
 
   dialog-application:
-    container_name: dialog-application
+    container_name: dialog-srv-eureka-client
     depends_on:
       - dialog_database
       - configuration-server
@@ -158,6 +161,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
+      HOSTNAME: dialog-srv-eureka-client
     links:
       - service-registry
     networks:
@@ -182,7 +186,7 @@ services:
       - chat-network
 
   chat-application:
-    container_name: chat-application
+    container_name: chat-srv-eureka-client
     depends_on:
       - chat_database
       - configuration-server
@@ -198,6 +202,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
+      HOSTNAME: chat-srv-eureka-client
     links:
       - service-registry
     networks:
