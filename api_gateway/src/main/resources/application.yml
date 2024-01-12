@@ -10,7 +10,7 @@ spring:
   config:
     import: ${CONFIG_URI:optional:configserver:http://localhost:8888/}
 server:
-  port: 8082
+  port: 8083
 eureka:
   client:
     serviceUrl:
@@ -18,4 +18,7 @@ eureka:
 #  instance:
 #    preferIpAddress: true
 
-
+management:
+  endpoint:
+    refresh:
+      enabled: true
