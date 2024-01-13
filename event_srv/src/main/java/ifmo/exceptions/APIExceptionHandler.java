@@ -1,6 +1,6 @@
 package ifmo.exceptions;
 
-import ifmo.exceptions.custom.UnsuccessfulSave;
+import ifmo.exceptions.UnsuccessfulSave;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;

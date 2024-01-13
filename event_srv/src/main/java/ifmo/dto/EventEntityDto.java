@@ -5,15 +5,16 @@ import ifmo.model.EventEntity;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Value
 @AllArgsConstructor
 @Getter
+@Setter
 public class EventEntityDto implements Serializable {
     Long id;
     @NotBlank(message = "Название мероприятия обязательно")
