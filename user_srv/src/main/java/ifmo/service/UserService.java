@@ -8,10 +8,11 @@ import ifmo.repository.UserRepository;
 import ifmo.exceptions.CustomExistsException;
 import ifmo.model.ProfileEntity;
 import ifmo.model.UserEntity;
-import ifmo.requests.RegisterRequest;
+import ifmo.dto.RegisterRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +28,16 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
 
+    private static final String showUserQueue = "show-user-queue";
+    private static final String showUserIdQueue = "show-user-id-queue";
+
+    @RabbitListener(queues = showUserQueue)
     public UserEntityDto getUser(String login) {
         var user = userRepository.findByLogin(login).orElseThrow(() -> new CustomNotFoundException("Юзер не найден"));
         return new UserEntityDto(user);
     }
 
+    @RabbitListener(queues = showUserIdQueue)
     public UserEntityDto getUserById(long id) {
         var user = userRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("Юзер не найден"));
         return new UserEntityDto(user);

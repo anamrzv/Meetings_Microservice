@@ -1,16 +1,20 @@
 package ifmo.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ifmo.model.ProfileEntity;
 import ifmo.validator.Birthday;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 
-@Value
+@Setter
+@Getter
 @AllArgsConstructor
 public class ProfileEntityDto implements Serializable {
 
@@ -34,6 +38,8 @@ public class ProfileEntityDto implements Serializable {
     String mail;
     @NotBlank(message = "Фото профиля пользователя отсутствует")
     String icon;
+    @JsonIgnore
+    String secondUser = "";
 
     public ProfileEntityDto(ProfileEntity profileEntity) {
         this.id = profileEntity.getId();

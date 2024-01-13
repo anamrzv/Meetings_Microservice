@@ -5,12 +5,13 @@ import ifmo.repository.UserRepository;
 import ifmo.exceptions.CustomExistsException;
 import ifmo.exceptions.CustomNotFoundException;
 import ifmo.model.UserEntity;
-import ifmo.requests.AuthenticationRequest;
-import ifmo.requests.AuthenticationResponse;
-import ifmo.requests.RegisterRequest;
+import ifmo.dto.AuthenticationRequest;
+import ifmo.dto.AuthenticationResponse;
+import ifmo.dto.RegisterRequest;
 import ifmo.security.JwtService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@EnableRabbit
 @RequiredArgsConstructor
 public class AuthenticationService {
 
@@ -28,6 +30,11 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
 
+    private static final String registerQueue = "register-queue";
+    private static final String registerAdminQueue = "register-admin-queue";
+    private static final String authQueue = "auth-queue";
+
+    @RabbitListener(queues = registerQueue)
     public AuthenticationResponse register(RegisterRequest req) {
         var user = userService.createUserWithProfile(req);
         var jwtToken = jwtService.generateToken(user);
@@ -36,6 +43,7 @@ public class AuthenticationService {
                 .build();
     }
 
+    @RabbitListener(queues = registerAdminQueue)
     public AuthenticationResponse registerAdmin(RegisterRequest req) {
         try {
             var user = UserEntity.builder()
@@ -53,6 +61,7 @@ public class AuthenticationService {
         }
     }
 
+    @RabbitListener(queues = authQueue)
     public AuthenticationResponse authenticate(AuthenticationRequest req) {
         try {
             authenticationManager.authenticate(

@@ -1,17 +1,17 @@
 package ifmo.controller;
 
-import ifmo.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ifmo.requests.AuthenticationRequest;
-import ifmo.requests.AuthenticationResponse;
-import ifmo.requests.RegisterRequest;
+import ifmo.dto.AuthenticationRequest;
+import ifmo.dto.AuthenticationResponse;
+import ifmo.dto.RegisterRequest;
 
 
 @RestController
@@ -20,20 +20,27 @@ import ifmo.requests.RegisterRequest;
 @RefreshScope
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
+    private final AmqpTemplate amqpTemplate;
+    private static final String exchanger = "direct-exchange";
+    private static final String registerKey = "register";
+    private static final String registerAdminKey = "register-admin";
+    private static final String authKey = "auth";
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest req) {
-        return ResponseEntity.ok(authenticationService.register(req));
+        AuthenticationResponse answer = (AuthenticationResponse) amqpTemplate.convertSendAndReceive(exchanger, registerKey, req);
+        return ResponseEntity.ok(answer);
     }
 
     @PostMapping("/register_admin")
     public ResponseEntity<AuthenticationResponse> registerAdmin(@Valid @RequestBody RegisterRequest req) {
-        return ResponseEntity.ok(authenticationService.registerAdmin(req));
+        AuthenticationResponse answer = (AuthenticationResponse) amqpTemplate.convertSendAndReceive(exchanger, registerAdminKey, req);
+        return ResponseEntity.ok(answer);
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@Valid @RequestBody AuthenticationRequest req) {
-        return ResponseEntity.ok(authenticationService.authenticate(req));
+        AuthenticationResponse answer = (AuthenticationResponse) amqpTemplate.convertSendAndReceive(exchanger, authKey, req);
+        return ResponseEntity.ok(answer);
     }
 }

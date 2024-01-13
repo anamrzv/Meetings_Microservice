@@ -5,6 +5,7 @@ import ifmo.repository.ProfileRepository;
 import ifmo.repository.UserRepository;
 import ifmo.dto.ProfileEntityDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,13 +14,18 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
 
+    private static final String showProfileQueue = "show-profile-queue";
+    private static final String updateProfileQueue = "update-profile-queue";
+
+    @RabbitListener(queues = showProfileQueue)
     public ProfileEntityDto showUserProfile(Long profileId) {
         var profileEntity = profileRepository.getProfileEntityById(profileId).orElseThrow(() -> new CustomNotFoundException("Профиль пользователя не найден"));
         return new ProfileEntityDto(profileEntity);
     }
 
-    public ProfileEntityDto updateUserProfile(String login, ProfileEntityDto profileDTO) {
-        var user = userRepository.findByLogin(login).orElseThrow(() -> new CustomNotFoundException("Пользователь не найден"));
+    @RabbitListener(queues = updateProfileQueue)
+    public ProfileEntityDto updateUserProfile(ProfileEntityDto profileDTO) {
+        var user = userRepository.findByLogin(profileDTO.getSecondUser()).orElseThrow(() -> new CustomNotFoundException("Пользователь не найден"));
 
         var oldProfile = profileRepository.findById(user.getProfileId().getId()).orElseThrow(() -> new CustomNotFoundException("Профиль пользователя не найден"));
         oldProfile.setFirstName(profileDTO.getFirstName());
