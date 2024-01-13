@@ -96,12 +96,12 @@ public class RabbitConfiguration {
 
     @Bean
     Binding showUserBinding(Queue showUserQueue, DirectExchange exchange) {
-        return BindingBuilder.bind(showUserQueue).to(exchange).with("show-user-queue");
+        return BindingBuilder.bind(showUserQueue).to(exchange).with("show-user");
     }
 
     @Bean
     Binding showUserIdBinding(Queue showUserIdQueue, DirectExchange exchange) {
-        return BindingBuilder.bind(showUserIdQueue).to(exchange).with("show-user-id-queue");
+        return BindingBuilder.bind(showUserIdQueue).to(exchange).with("show-user-id");
     }
 
 

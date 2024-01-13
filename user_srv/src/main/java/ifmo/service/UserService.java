@@ -12,6 +12,7 @@ import ifmo.dto.RegisterRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import java.time.Period;
 
 @Service
+@EnableRabbit
 @RequiredArgsConstructor
 public class UserService {
 
@@ -33,6 +35,7 @@ public class UserService {
 
     @RabbitListener(queues = showUserQueue)
     public UserEntityDto getUser(String login) {
+        System.out.println("got "+login);
         var user = userRepository.findByLogin(login).orElseThrow(() -> new CustomNotFoundException("Юзер не найден"));
         return new UserEntityDto(user);
     }
