@@ -24,6 +24,13 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(exceptionDTO, badRequest);
     }
 
+    @ExceptionHandler(value = CustomInternalException.class)
+    public ResponseEntity<Object> handleCustomInternalExceptions(CustomInternalException customException) {
+        HttpStatus badRequest = HttpStatus.INTERNAL_SERVER_ERROR;
+        ExceptionDTO exceptionDTO = new ExceptionDTO(customException.getMessage(), badRequest, LocalDateTime.now());
+        return new ResponseEntity<>(exceptionDTO, badRequest);
+    }
+
     @ExceptionHandler(value = UnsuccessfulSave.class)
     public ResponseEntity<Object> handleUnsuccessfulSaveExceptions(UnsuccessfulSave customException) {
         HttpStatus badRequest = HttpStatus.INTERNAL_SERVER_ERROR;

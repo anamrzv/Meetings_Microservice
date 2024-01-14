@@ -17,13 +17,13 @@ public class ProfileService {
     private static final String showProfileQueue = "show-profile-queue";
     private static final String updateProfileQueue = "update-profile-queue";
 
-    @RabbitListener(queues = showProfileQueue)
+    @RabbitListener(queues = showProfileQueue, returnExceptions = "true")
     public ProfileEntityDto showUserProfile(Long profileId) {
         var profileEntity = profileRepository.getProfileEntityById(profileId).orElseThrow(() -> new CustomNotFoundException("Профиль пользователя не найден"));
         return new ProfileEntityDto(profileEntity);
     }
 
-    @RabbitListener(queues = updateProfileQueue)
+    @RabbitListener(queues = updateProfileQueue, returnExceptions = "true")
     public ProfileEntityDto updateUserProfile(ProfileEntityDto profileDTO) {
         var user = userRepository.findByLogin(profileDTO.getSecondUser()).orElseThrow(() -> new CustomNotFoundException("Пользователь не найден"));
 

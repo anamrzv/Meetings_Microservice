@@ -8,13 +8,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Value
 @AllArgsConstructor
 @Getter
 @Setter
-public class MessageDTO {
+public class MessageDTO implements Serializable {
     Long id;
     @NotBlank(message = "У сообщения должно быть содержание")
     String content;

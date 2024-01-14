@@ -20,6 +20,6 @@ public class UserEntityDto implements Serializable {
     public UserEntityDto(UserEntity userEntity) {
         id = userEntity.getId();
         login = userEntity.getLogin();
-        profile = userEntity.getProfileId().getId();
+        profile = (userEntity.getProfileId() != null) ? userEntity.getProfileId().getId() : 0L;
     }
 }

@@ -34,23 +34,23 @@ public class EventService {
     private static final String setQueue = "set-queue";
     private static final String removeQueue = "remove-queue";
 
-    @RabbitListener(queues = findAllChildQueue)
+    @RabbitListener(queues = findAllChildQueue, returnExceptions = "true")
     public List<EventEntityDto> findAllChild() {
         return eventRepository.getEventEntitiesByAgeLimitBefore(18).stream().map(EventEntityDto::new).collect(Collectors.toList());
     }
 
-    @RabbitListener(queues = findAllQueue)
+    @RabbitListener(queues = findAllQueue, returnExceptions = "true")
     public Page<EventEntityDto> findAll(Pageable pageable) {
         return eventRepository.findAll(pageable).map(EventEntityDto::new);
     }
 
-    @RabbitListener(queues = idQueue)
+    @RabbitListener(queues = idQueue, returnExceptions = "true")
     public EventEntityDto findEventById(Long id) {
         var eventEntity = eventRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("Мероприятия с таким id не существует"));
         return new EventEntityDto(eventEntity);
     }
 
-    @RabbitListener(queues = filterQueue)
+    @RabbitListener(queues = filterQueue, returnExceptions = "true")
     public List<EventEntityDto> getEventsByCharacteristics(CharacteristicsDto characteristicsDto) {
         var filter = characteristicsDto.getChars().stream()
                 .map(c -> characteristicRepository.getCharacteristicEntityByName(c).orElseThrow(() -> new CustomNotFoundException("Характеристики не найдено")))
@@ -60,33 +60,35 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    @RabbitListener(queues = setQueue)
+    @RabbitListener(queues = setQueue, returnExceptions = "true")
     @Transactional
-    public void setCharacteristicsToEvent(CharacteristicsDto characteristicsDto) {
+    public boolean setCharacteristicsToEvent(CharacteristicsDto characteristicsDto) {
         var eventEntity = eventRepository.findById(characteristicsDto.getEventId()).orElseThrow(() -> new CustomNotFoundException("Мероприятия с таким id не существует"));
         characteristicsDto.getChars().stream()
                 .map(c -> characteristicRepository.getCharacteristicEntityByName(c).orElseThrow(() -> new CustomNotFoundException("Характеристики не найдено")))
                 .forEach(eventEntity::addCharacteristic);
         eventRepository.save(eventEntity);
+        return true;
     }
 
-    @RabbitListener(queues = removeQueue)
+    @RabbitListener(queues = removeQueue, returnExceptions = "true")
     @Transactional
-    public void removeCharacteristicsFromEvent(CharacteristicsDto characteristicsDto) {
+    public boolean removeCharacteristicsFromEvent(CharacteristicsDto characteristicsDto) {
         var eventEntity = eventRepository.findById(characteristicsDto.getEventId()).orElseThrow(() -> new CustomNotFoundException("Мероприятия с таким id не существует"));
         characteristicsDto.getChars().stream()
                 .map(c -> characteristicRepository.getCharacteristicEntityByName(c).orElseThrow(() -> new CustomNotFoundException("Характеристики не найдено")))
                 .forEach(eventEntity::removeCharacteristic);
         eventRepository.save(eventEntity);
+        return true;
     }
 
-    @RabbitListener(queues = addQueue)
+    @RabbitListener(queues = addQueue, returnExceptions = "true")
     public EventEntityDto addEvent(EventEntityDto eventDTO) {
         var addedEvent = eventRepository.save(new EventEntity(eventDTO.getName(), eventDTO.getAgeLimit(), eventDTO.getImage(), eventDTO.getDescription(), eventDTO.getMaxOfVisitors(), eventDTO.getStartDate()));
         return new EventEntityDto(addedEvent);
     }
 
-    @RabbitListener(queues = updaterQueue)
+    @RabbitListener(queues = updaterQueue, returnExceptions = "true")
     public EventEntityDto updateEvent(EventEntityDto eventDTO) {
         var oldEvent = eventRepository.findById(eventDTO.getId()).orElseThrow(() -> new CustomNotFoundException("Мероприятия с таким id не существует"));
         oldEvent.setAgeLimit(eventDTO.getAgeLimit());

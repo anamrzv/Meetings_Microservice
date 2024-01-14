@@ -34,7 +34,7 @@ public class AuthenticationService {
     private static final String registerAdminQueue = "register-admin-queue";
     private static final String authQueue = "auth-queue";
 
-    @RabbitListener(queues = registerQueue)
+    @RabbitListener(queues = registerQueue, returnExceptions = "true")
     public AuthenticationResponse register(RegisterRequest req) {
         var user = userService.createUserWithProfile(req);
         var jwtToken = jwtService.generateToken(user);
@@ -43,7 +43,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    @RabbitListener(queues = registerAdminQueue)
+    @RabbitListener(queues = registerAdminQueue, returnExceptions = "true")
     public AuthenticationResponse registerAdmin(RegisterRequest req) {
         try {
             var user = UserEntity.builder()

@@ -2,10 +2,14 @@ package ifmo.controller;
 
 
 import ifmo.dto.UserEntityDto;
+import ifmo.exceptions.CustomInternalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.support.converter.RemoteInvocationResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -19,14 +23,26 @@ public class UserController {
 
     @GetMapping("/{login}")
     public ResponseEntity<UserEntityDto> getUser(@PathVariable String login, @RequestHeader(value = "Authorization") String authorizationHeader) {
-        UserEntityDto answer = (UserEntityDto) amqpTemplate.convertSendAndReceive(exchanger, showUserKey, login);
-        return ResponseEntity.ok().body(answer);
+        var answer = amqpTemplate.convertSendAndReceive(exchanger, showUserKey, login);
+        if (answer == null) throw new CustomInternalException("Сервер не отвечает. Пожалуйста, попробуйте позже");
+        if (answer.getClass().isInstance(new RemoteInvocationResult())) {
+            var a = (RemoteInvocationResult) answer;
+            throw (RuntimeException) Objects.requireNonNull(a.getException());
+        }
+        return ResponseEntity.ok().body((UserEntityDto) answer);
+
     }
 
     @GetMapping("/by/id/{id}")
     public ResponseEntity<UserEntityDto> getUserById(@PathVariable long id, @RequestHeader(value = "Authorization") String authorizationHeader) {
-        UserEntityDto answer = (UserEntityDto) amqpTemplate.convertSendAndReceive(exchanger, updateUserIdKey, id);
-        return ResponseEntity.ok().body(answer);
+        var answer = amqpTemplate.convertSendAndReceive(exchanger, updateUserIdKey, id);
+        if (answer == null) throw new CustomInternalException("Сервер не отвечает. Пожалуйста, попробуйте позже");
+        if (answer.getClass().isInstance(new RemoteInvocationResult())) {
+            var a = (RemoteInvocationResult) answer;
+            throw (RuntimeException) Objects.requireNonNull(a.getException());
+        }
+        return ResponseEntity.ok().body((UserEntityDto) answer);
+
     }
 
 }

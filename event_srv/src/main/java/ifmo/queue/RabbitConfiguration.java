@@ -100,7 +100,7 @@ public class RabbitConfiguration {
     @Bean
     public SimpleMessageConverter converter() {
         SimpleMessageConverter converter = new SimpleMessageConverter();
-        converter.setAllowedListPatterns(List.of("ifmo.dto.*", "java.*", "org.springframework.data.domain.*"));
+        converter.setAllowedListPatterns(List.of("ifmo.dto.*", "java.*", "org.springframework.data.domain.*", "jakarta.servlet.http.*", "org.springframework.amqp.*", "ifmo.exceptions.*"));
         return converter;
     }
 }

@@ -33,14 +33,13 @@ public class UserService {
     private static final String showUserQueue = "show-user-queue";
     private static final String showUserIdQueue = "show-user-id-queue";
 
-    @RabbitListener(queues = showUserQueue)
+    @RabbitListener(queues = showUserQueue, returnExceptions = "true")
     public UserEntityDto getUser(String login) {
-        System.out.println("got "+login);
         var user = userRepository.findByLogin(login).orElseThrow(() -> new CustomNotFoundException("Юзер не найден"));
         return new UserEntityDto(user);
     }
 
-    @RabbitListener(queues = showUserIdQueue)
+    @RabbitListener(queues = showUserIdQueue, returnExceptions = "true")
     public UserEntityDto getUserById(long id) {
         var user = userRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("Юзер не найден"));
         return new UserEntityDto(user);
