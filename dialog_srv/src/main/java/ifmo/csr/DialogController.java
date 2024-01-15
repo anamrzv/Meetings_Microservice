@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class DialogController {
 
     private final DialogService dialogService;
 
+    @Operation(summary = "Получить все чаты пользователя")
     @GetMapping(value = "/",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private Mono<ResponseEntity<List<ChatEntityDto>>> getAllChatsByUser(@RequestHeader("Username") String userLogin,
@@ -28,6 +30,7 @@ public class DialogController {
         return Mono.just(ResponseEntity.ok().body(chats));
     }
 
+    @Operation(summary = "Сохранить чат пользователя")
     @PostMapping(value = "/",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private Mono<ResponseEntity<HttpStatus>> saveChatUser(@RequestBody DialogEntityDto dto) {
@@ -35,6 +38,7 @@ public class DialogController {
         return Mono.just(ResponseEntity.ok().build());
     }
 
+    @Operation(summary = "Получить собеседников чата")
     @GetMapping(value = "/users/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private Mono<ResponseEntity<List<UserEntityDto>>> getAllUsersByChat(@PathVariable Long id,
