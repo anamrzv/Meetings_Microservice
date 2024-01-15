@@ -3,8 +3,11 @@ package ifmo.csr;
 import ifmo.dto.ChatEntityDto;
 import ifmo.dto.DialogEntityDto;
 import ifmo.dto.UserEntityDto;
-import jakarta.servlet.http.HttpServletRequest;
+import ifmo.dto.UtilDto;
+import ifmo.exceptions.CustomInternalException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.support.converter.RemoteInvocationResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,34 +15,54 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/dialog")
 @RequiredArgsConstructor
 public class DialogController {
 
-    private final DialogService dialogService;
+    private final AmqpTemplate amqpTemplate;
+    private static final String exchanger = "direct-exchange";
+    private static final String chatKey = "chat";
+    private static final String saveKey = "save";
+    private static final String userKey = "user";
 
     @GetMapping(value = "/",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private Mono<ResponseEntity<List<ChatEntityDto>>> getAllChatsByUser(@RequestHeader("Username") String userLogin,
-                                                                        HttpServletRequest request) {
-        var chats = dialogService.getAllChatsByUserLogin(userLogin, request);
-        return Mono.just(ResponseEntity.ok().body(chats));
+                                                                        @RequestHeader(value = "Authorization") String authorizationHeader) {
+        var answer = amqpTemplate.convertSendAndReceive(exchanger, chatKey, new UtilDto(userLogin, authorizationHeader, 0L, 0L));
+        if (answer == null) throw new CustomInternalException("Сервер не отвечает. Пожалуйста, попробуйте позже");
+        if (answer.getClass().isInstance(new RemoteInvocationResult())) {
+            var a = (RemoteInvocationResult) answer;
+            throw (RuntimeException) Objects.requireNonNull(a.getException());
+        }
+        return Mono.just(ResponseEntity.ok().body((List<ChatEntityDto>) answer));
     }
 
     @PostMapping(value = "/",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private Mono<ResponseEntity<HttpStatus>> saveChatUser(@RequestBody DialogEntityDto dto) {
-        dialogService.saveChatUser(dto.getChatId(), dto.getUserId());
+        var answer = amqpTemplate.convertSendAndReceive(exchanger, saveKey, new UtilDto("", "", dto.getChatId(), dto.getUserId()));
+        if (answer == null) throw new CustomInternalException("Сервер не отвечает. Пожалуйста, попробуйте позже");
+        if (answer.getClass().isInstance(new RemoteInvocationResult())) {
+            var a = (RemoteInvocationResult) answer;
+            throw (RuntimeException) Objects.requireNonNull(a.getException());
+        }
         return Mono.just(ResponseEntity.ok().build());
     }
 
     @GetMapping(value = "/users/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private Mono<ResponseEntity<List<UserEntityDto>>> getAllUsersByChat(@PathVariable Long id,
-                                                                        HttpServletRequest request) {
-        var users = dialogService.getAllUsersByChat(id, request);
-        return Mono.just(ResponseEntity.ok().body(users));
+                                                                        @RequestHeader(value = "Authorization") String authorizationHeader) {
+        var answer = amqpTemplate.convertSendAndReceive(exchanger, userKey, new UtilDto("", authorizationHeader, id, 0L));
+        if (answer == null) throw new CustomInternalException("Сервер не отвечает. Пожалуйста, попробуйте позже");
+        if (answer.getClass().isInstance(new RemoteInvocationResult())) {
+            var a = (RemoteInvocationResult) answer;
+            throw (RuntimeException) Objects.requireNonNull(a.getException());
+        }
+        return Mono.just(ResponseEntity.ok().body((List<UserEntityDto>) answer));
     }
 }
