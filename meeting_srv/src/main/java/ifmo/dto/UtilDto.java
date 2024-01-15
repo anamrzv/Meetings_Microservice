@@ -7,7 +7,8 @@ import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor
-public class DialogEntityDto implements Serializable {
-    Long chatId;
-    Long userId;
+public class UtilDto implements Serializable {
+    private Long eventId;
+    private String userLogin;
+    private String token;
 }

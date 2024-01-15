@@ -1,6 +1,10 @@
 spring:
   application:
     name: user-srv-eureka-client
+  amqp:
+    deserialization:
+      trust:
+        all: true
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/user_db}
     username: postgres
@@ -26,3 +30,8 @@ eureka:
   instance:
     #preferIpAddress: true
     hostname: ${HOSTNAME:localhost}
+
+management:
+  endpoint:
+    refresh:
+      enabled: true

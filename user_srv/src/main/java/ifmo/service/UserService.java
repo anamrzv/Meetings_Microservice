@@ -8,10 +8,12 @@ import ifmo.repository.UserRepository;
 import ifmo.exceptions.CustomExistsException;
 import ifmo.model.ProfileEntity;
 import ifmo.model.UserEntity;
-import ifmo.requests.RegisterRequest;
+import ifmo.dto.RegisterRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import java.time.LocalDate;
 import java.time.Period;
 
 @Service
+@EnableRabbit
 @RequiredArgsConstructor
 public class UserService {
 
@@ -27,11 +30,16 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
 
+    private static final String showUserQueue = "show-user-queue";
+    private static final String showUserIdQueue = "show-user-id-queue";
+
+    @RabbitListener(queues = showUserQueue, returnExceptions = "true")
     public UserEntityDto getUser(String login) {
         var user = userRepository.findByLogin(login).orElseThrow(() -> new CustomNotFoundException("Юзер не найден"));
         return new UserEntityDto(user);
     }
 
+    @RabbitListener(queues = showUserIdQueue, returnExceptions = "true")
     public UserEntityDto getUserById(long id) {
         var user = userRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("Юзер не найден"));
         return new UserEntityDto(user);
