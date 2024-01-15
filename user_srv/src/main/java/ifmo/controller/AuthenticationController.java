@@ -1,6 +1,7 @@
 package ifmo.controller;
 
 import ifmo.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -22,16 +23,19 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
+    @Operation(summary = "Регистрация пользователя")
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest req) {
         return ResponseEntity.ok(authenticationService.register(req));
     }
 
+    @Operation(summary = "Регистрация администратора")
     @PostMapping("/register_admin")
     public ResponseEntity<AuthenticationResponse> registerAdmin(@Valid @RequestBody RegisterRequest req) {
         return ResponseEntity.ok(authenticationService.registerAdmin(req));
     }
 
+    @Operation(summary = "Аутентификация")
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@Valid @RequestBody AuthenticationRequest req) {
         return ResponseEntity.ok(authenticationService.authenticate(req));

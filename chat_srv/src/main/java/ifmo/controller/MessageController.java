@@ -5,6 +5,7 @@ import ifmo.dto.MessageDTO;
 import ifmo.exceptions.CustomInternalException;
 import ifmo.feign_client.UserClient;
 import ifmo.service.ChatService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
@@ -27,6 +28,7 @@ public class MessageController {
 
     private final CircuitBreakerFactory circuitBreakerFactory;
 
+    @Operation(summary = "Получить все сообщения из чата")
     @GetMapping(value = "/{chat_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<List<MessageDTO>> getAllChatMessages(@PathVariable(value = "chat_id") long chatId) {
@@ -34,6 +36,7 @@ public class MessageController {
         return ResponseEntity.ok().body(messages);
     }
 
+    @Operation(summary = "Получить чат пользователя")
     @GetMapping(value = "/entity/{chat_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<ChatEntityDto> getChat(@PathVariable(value = "chat_id") long chatId,
@@ -42,6 +45,7 @@ public class MessageController {
         return ResponseEntity.ok().body(chat);
     }
 
+    @Operation(summary = "Отправить сообщение в чат")
     @PostMapping(value = "/msg/{chat_id}",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -57,6 +61,7 @@ public class MessageController {
         return ResponseEntity.ok().body(msgDto);
     }
 
+    @Operation(summary = "Создать чат с пользователем")
     @PostMapping(value = "/{second_user}",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
