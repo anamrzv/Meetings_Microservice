@@ -3,6 +3,7 @@ package ifmo.csr;
 import ifmo.dto.UserEntityDto;
 import ifmo.dto.UtilDto;
 import ifmo.exceptions.CustomInternalException;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class MeetingController {
     private static final String addKey = "add";
     private static final String getKey = "get";
 
+    @Operation(summary = "Добавить событие в интересующие")
     @PostMapping(value = "/{event_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<HttpStatus> addEventToInteresting(@PathVariable(value = "event_id") @Min(1) long eventId,
@@ -40,6 +42,7 @@ public class MeetingController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(summary = "Получить пользоватаелей, заинтересованных событием")
     @GetMapping(value = "/{event_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<List<UserEntityDto>> getInterestedUsers(@PathVariable(value = "event_id") @Min(1) long eventId,

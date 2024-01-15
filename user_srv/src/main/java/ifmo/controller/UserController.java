@@ -8,6 +8,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.support.converter.RemoteInvocationResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.Objects;
 
@@ -21,6 +22,7 @@ public class UserController {
     private static final String showUserKey = "show-user";
     private static final String updateUserIdKey = "show-user-id";
 
+    @Operation(summary = "Получить данные пользователя по логину")
     @GetMapping("/{login}")
     public ResponseEntity<UserEntityDto> getUser(@PathVariable String login, @RequestHeader(value = "Authorization") String authorizationHeader) {
         var answer = amqpTemplate.convertSendAndReceive(exchanger, showUserKey, login);
@@ -33,6 +35,7 @@ public class UserController {
 
     }
 
+    @Operation(summary = "Получить данные пользователя по id")
     @GetMapping("/by/id/{id}")
     public ResponseEntity<UserEntityDto> getUserById(@PathVariable long id, @RequestHeader(value = "Authorization") String authorizationHeader) {
         var answer = amqpTemplate.convertSendAndReceive(exchanger, updateUserIdKey, id);

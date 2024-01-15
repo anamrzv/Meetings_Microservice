@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,6 +28,7 @@ public class ProfileController {
     private static final String updateProfileKey = "update-profile";
 
 
+    @Operation(summary = "Показать данные профиля")
     @GetMapping(value = "/{profile_id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<ProfileEntityDto> showProfileById(@PathVariable(value = "profile_id") @Min(1) long profileId) {
         var answer = amqpTemplate.convertSendAndReceive(exchanger, showProfileKey, profileId);
@@ -39,6 +41,7 @@ public class ProfileController {
 
     }
 
+    @Operation(summary = "Обновить профиль")
     @PutMapping(value = "/",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
