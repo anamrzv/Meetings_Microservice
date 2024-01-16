@@ -34,7 +34,8 @@ dependencies {
 	//implementation 'org.springframework.security:spring-security-core'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix:2.2.10.RELEASE'
 	//swagger
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.2'
+	implementation 'org.springdoc:springdoc-openapi-starter-webflux-api:2.0.2'
 }
 
 dependencyManagement {
