@@ -17,5 +17,53 @@ eureka:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
 #  instance:
 #    preferIpAddress: true
+springdoc:
+  enable-native-support: true
+  api-docs:
+    groups:
+      enabled: true
+    enabled: true
+  group-configs:
+    - group: chat
+      paths-to-match:
+        - /api/v1/chat/**
+      display-name: chat
 
+    - group: dialog
+      paths-to-match:
+        - /api/v1/dialog/**
+      display-name: dialog
 
+    - group: event
+      paths-to-match:
+        - /api/v1/event/**
+      display-name: event
+
+    - group: meeting
+      paths-to-match:
+        - /api/v1/meeting/**
+      display-name: meeting
+
+    - group: user
+      paths-to-match:
+        - /api/v1/user/**
+      display-name: user
+
+  swagger-ui:
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+    urls:
+      - url: /chat/v3/api-docs
+        name: chat
+
+      - url: /dialog/v3/api-docs
+        name: dialog
+
+      - url: /event/v3/api-docs
+        name: event
+
+      - url: /meeting/v3/api-docs
+        name: meeting
+
+      - url: /user/v3/api-docs
+        name: user

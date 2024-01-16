@@ -6,6 +6,7 @@ import ifmo.exceptions.CustomInternalException;
 import ifmo.feign_client.UserClient;
 import ifmo.service.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
 
+@Tag(name = "Контроллер сообщений", description = "Действия, связанные с чатом пользователей")
 @RestController
 @RequestMapping("/api/v1/chats")
 @RequiredArgsConstructor
