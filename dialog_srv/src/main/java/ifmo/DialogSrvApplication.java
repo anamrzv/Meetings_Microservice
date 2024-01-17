@@ -5,10 +5,14 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @SpringBootApplication
 @EnableFeignClients
@@ -18,6 +22,14 @@ public class DialogSrvApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DialogSrvApplication.class, args);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CorsConfiguration corsConfiguration() {
+        var configuration = new CorsConfiguration().applyPermitDefaultValues();
+        configuration.setAllowedMethods(List.of("GET", "POST"));
+        return configuration;
     }
 
     @Bean
