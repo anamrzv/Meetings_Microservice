@@ -1,5 +1,13 @@
 services:
 
+  rabbit_mq:
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "61613:61613"
+    build:
+      dockerfile: Dockerfile
+
   ##### USER SERVICE
   user_database:
     image: postgres:latest

@@ -32,7 +32,6 @@ public class UserController {
             throw (RuntimeException) Objects.requireNonNull(a.getException());
         }
         return ResponseEntity.ok().body((UserEntityDto) answer);
-
     }
 
     @Operation(summary = "Получить данные пользователя по id")
@@ -47,5 +46,4 @@ public class UserController {
         return ResponseEntity.ok().body((UserEntityDto) answer);
 
     }
-
 }
