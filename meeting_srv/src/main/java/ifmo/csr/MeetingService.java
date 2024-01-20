@@ -14,6 +14,7 @@ import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,13 +24,10 @@ import java.util.stream.Collectors;
 public class MeetingService {
 
     private final MeetingRepository meetingRepository;
-    private final UserClient userClient;
-    private final CircuitBreakerFactory circuitBreakerFactory;
     private final UserWebSocketClient userWebSocketClient;
 
     private static final String addQueue = "add-queue";
     private static final String getQueue = "get-queue";
-
 
     @RabbitListener(queues = addQueue, returnExceptions = "true")
     public boolean addEventToInteresting(UtilDto utilDto) {
@@ -49,14 +47,12 @@ public class MeetingService {
 
     @RabbitListener(queues = getQueue, returnExceptions = "true")
     public List<UserEntityDto> getAllUsersByEvent(UtilDto utilDto) {
-        CircuitBreaker breaker = circuitBreakerFactory.create("eren");
-
         var meetingsForEvent = meetingRepository.findMeetingEntitiesByEventId(utilDto.getEventId());
-        return meetingsForEvent.stream()
-                .map(MeetingEntity::getUserId)
-                .map(id -> breaker.run(() -> userClient.getUserById(id, utilDto.getToken()), throwable -> userClient.getUserFallback()))
-                .filter(response -> response.getStatusCode().is2xxSuccessful())
-                .map(HttpEntity::getBody)
-                .collect(Collectors.toList());
+        List<UserEntityDto> allUsers = new LinkedList<>();
+        for (MeetingEntity m : meetingsForEvent) {
+            userWebSocketClient.getUserByIdRequest(m.getUserId());
+            allUsers.add(userWebSocketClient.getUserByIdResponse());
+        }
+        return allUsers;
     }
 }

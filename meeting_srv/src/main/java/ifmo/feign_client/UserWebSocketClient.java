@@ -14,7 +14,9 @@ public class UserWebSocketClient {
     private final UserStompSessionHandler sessionHandler;
     private final static String URL = "ws://localhost:9001/websocket-user";
     private final static String subscribeLogin = "/topic/loginResult";
+    private final static String subscribeId = "/topic/idResult";
     private final static String sendUserByLogin = "/app/getUserByLoginWebsocket";
+    private final static String sendUserById = "/app/getUserByIdWebsocket";
     private final StompSession session;
 
     public UserWebSocketClient() throws ExecutionException, InterruptedException {
@@ -24,7 +26,7 @@ public class UserWebSocketClient {
         var future = stompClient.connectAsync(URL, sessionHandler);
         session = future.get();
         session.subscribe(subscribeLogin, sessionHandler);
-
+        session.subscribe(subscribeId, sessionHandler);
     }
 
     public void getUserByLoginRequest(String login) {
@@ -32,6 +34,14 @@ public class UserWebSocketClient {
     }
 
     public UserEntityDto getUserByLoginResponse() {
+        return sessionHandler.getResult();
+    }
+
+    public void getUserByIdRequest(Long id) {
+        session.send(sendUserById, id);
+    }
+
+    public UserEntityDto getUserByIdResponse() {
         return sessionHandler.getResult();
     }
 
