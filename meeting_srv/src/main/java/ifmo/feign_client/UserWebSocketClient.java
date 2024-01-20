@@ -1,6 +1,7 @@
 package ifmo.feign_client;
 
 import ifmo.dto.UserEntityDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,9 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class UserWebSocketClient {
     private final UserStompSessionHandler sessionHandler;
-    private final static String URL = "ws://localhost:9001/websocket-user";
+
+    @Value("${websocket.url}")
+    private String URL;
     private final static String subscribeLogin = "/topic/loginResult";
     private final static String subscribeId = "/topic/idResult";
     private final static String sendUserByLogin = "/app/getUserByLoginWebsocket";

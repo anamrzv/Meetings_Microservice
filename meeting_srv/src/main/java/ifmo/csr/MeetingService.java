@@ -3,20 +3,15 @@ package ifmo.csr;
 import ifmo.dto.UserEntityDto;
 import ifmo.dto.UtilDto;
 import ifmo.exceptions.CustomExistsException;
-import ifmo.feign_client.UserClient;
 import ifmo.feign_client.UserWebSocketClient;
 import ifmo.model.MeetingEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor

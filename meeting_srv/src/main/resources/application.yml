@@ -26,12 +26,5 @@ eureka:
   instance:
     #preferIpAddress: true
     hostname: ${HOSTNAME:localhost}
-resilience4j.circuitbreaker:
-  instances:
-    eren:
-      registerHealthIndicator: true
-      slidingWindowSize: 3 # оценка работоспособности сервиса на основе трех последних вызовов
-      slow-call-duration-threshold: 4000 # если сервис работает дольше этого времени, то открыть схему
-      permittedNumberOfCallsInHalfOpenState: 3 # столько максимум раз после ожидания будет вызван сервис для проверки
-      minimumNumberOfCalls: 3
-      waitDurationInOpenState: 50s
+websocket:
+  url: ${USER_HOSTNAME:ws://localhost:9001/websocket-user}
