@@ -59,6 +59,9 @@ dependencies {
     //query
     implementation 'org.springframework.amqp:spring-rabbit'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    //websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework:spring-messaging'
 }
 
 dependencyManagement {

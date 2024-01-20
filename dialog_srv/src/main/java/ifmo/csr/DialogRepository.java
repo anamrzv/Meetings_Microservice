@@ -9,7 +9,6 @@ import java.util.List;
 @Repository
 public interface DialogRepository extends JpaRepository<DialogEntity, Long> {
     List<DialogEntity> getChatUserEntitiesByUserId(Long id);
-
     List<DialogEntity> getChatUserEntitiesByChatId(Long id);
 
 }
