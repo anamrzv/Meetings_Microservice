@@ -22,5 +22,7 @@ create table if not exists user_settings
     login           varchar(20) not null unique,
     hashed_password varchar(60) not null,
     role            integer references roles (role_id) not null,
-    profile_id      integer references profile (id)
+    profile_id      integer references profile (id),
+    verification_code varchar(64),
+    enabled         boolean
 );

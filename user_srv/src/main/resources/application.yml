@@ -21,8 +21,18 @@ spring:
     baseline-description: "init"
   config:
     import: ${CONFIG_URI:optional:configserver:http://localhost:8888/}
+  mail:
+    host: smtp.mail.ru
+    port: 465
+    username:
+    password:
+    properties:
+      "mail.smtp.ssl.enable": true
+      "mail.smtp.auth": true
+      "mail.smtp.starttls.enable": true
 server:
   port: 9001
+
 eureka:
   client:
     serviceUrl:
@@ -35,3 +45,7 @@ management:
   endpoint:
     refresh:
       enabled: true
+
+mailing:
+  site: ${SITE_URI:http://localhost:8083/api/v1/auth}
+

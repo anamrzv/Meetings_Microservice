@@ -4,9 +4,6 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.support.converter.DefaultClassMapper;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +16,7 @@ public class RabbitConfiguration {
     private static final String registerQueue = "register-queue";
     private static final String registerAdminQueue = "register-admin-queue";
     private static final String authQueue = "auth-queue";
-
+    private static final String verifyQueue = "verify-queue";
 
     private static final String showProfileQueue = "show-profile-queue";
     private static final String updateProfileQueue = "update-profile-queue";
@@ -65,6 +62,11 @@ public class RabbitConfiguration {
     }
 
     @Bean
+    public Queue verifyQueue() {
+        return new Queue(verifyQueue, false);
+    }
+
+    @Bean
     public DirectExchange exchange() {
         return new DirectExchange("direct-exchange");
     }
@@ -102,6 +104,11 @@ public class RabbitConfiguration {
     @Bean
     Binding showUserIdBinding(Queue showUserIdQueue, DirectExchange exchange) {
         return BindingBuilder.bind(showUserIdQueue).to(exchange).with("show-user-id");
+    }
+
+    @Bean
+    Binding verifyBinding(Queue verifyQueue, DirectExchange exchange) {
+        return BindingBuilder.bind(verifyQueue).to(exchange).with("verify");
     }
 
 
