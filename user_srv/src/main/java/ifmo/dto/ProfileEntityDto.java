@@ -8,7 +8,6 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -19,10 +18,10 @@ import java.time.LocalDate;
 public class ProfileEntityDto implements Serializable {
 
     Long id;
-    @Pattern(message = "Неправильный формат имени: разрешены только буквы русского алфавита, от 1 до 30 символов", regexp = "[\u0410-\u042F\u0430-\u044F\u0451\u0401]{1,30}")
+    @Pattern(message = "Неправильный формат имени: разрешены только буквы русского алфавита, от 1 до 30 символов", regexp = "[А-Яа-яёЁ]{1,30}")
     @NotBlank(message = "Имя пользователя обязательно")
     String firstName;
-    @Pattern(message = "Неправильный формат фамилии: разрешены только буквы русского алфавита, от 1 до 30 символов", regexp = "[\u0410-\u042F\u0430-\u044F\u0451\u0401]{1,30}")
+    @Pattern(message = "Неправильный формат фамилии: разрешены только буквы русского алфавита, от 1 до 30 символов", regexp = "[А-Яа-яёЁ]{1,30}")
     @NotBlank(message = "Фамилия пользователя обязательна")
     String lastName;
     @NotNull(message = "Дата рождения пользователя обязательна")
@@ -36,8 +35,6 @@ public class ProfileEntityDto implements Serializable {
     @Email(message = "Неправильный формат электронной почты")
     @NotBlank(message = "Почта пользователя отсутствует")
     String mail;
-    @NotBlank(message = "Фото профиля пользователя отсутствует")
-    String icon;
     @JsonIgnore
     String secondUser = "";
 
@@ -48,7 +45,6 @@ public class ProfileEntityDto implements Serializable {
         this.dateOfBirth = profileEntity.getDateOfBirth();
         this.phone = profileEntity.getPhone();
         this.mail = profileEntity.getMail();
-        this.icon = profileEntity.getIcon();
     }
 }
 

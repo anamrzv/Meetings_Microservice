@@ -44,7 +44,4 @@ public class RegisterRequest implements Serializable {
     @Email(message = "Неправильный формат электронной почты")
     @NotBlank(message = "Почта пользователя отсутствует")
     private String mail;
-
-    @NotBlank(message = "Фото профиля пользователя отсутствует")
-    private String icon;
 }

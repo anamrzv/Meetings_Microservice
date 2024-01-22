@@ -30,6 +30,11 @@ spring:
       "mail.smtp.ssl.enable": true
       "mail.smtp.auth": true
       "mail.smtp.starttls.enable": true
+  servlet:
+    multipart:
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
 server:
   port: 9001
 

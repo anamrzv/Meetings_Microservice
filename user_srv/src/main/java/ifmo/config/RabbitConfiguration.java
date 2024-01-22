@@ -20,7 +20,8 @@ public class RabbitConfiguration {
 
     private static final String showProfileQueue = "show-profile-queue";
     private static final String updateProfileQueue = "update-profile-queue";
-
+    private static final String uploadIconQueue = "upload-icon-queue";
+    private static final String getIconQueue = "get-icon-queue";
 
     private static final String showUserQueue = "show-user-queue";
     private static final String showUserIdQueue = "show-user-id-queue";
@@ -64,6 +65,16 @@ public class RabbitConfiguration {
     @Bean
     public Queue verifyQueue() {
         return new Queue(verifyQueue, false);
+    }
+
+    @Bean
+    public Queue uploadIconQueue() {
+        return new Queue(uploadIconQueue, false);
+    }
+
+    @Bean
+    public Queue getIconQueue() {
+        return new Queue(getIconQueue, false);
     }
 
     @Bean
@@ -111,11 +122,21 @@ public class RabbitConfiguration {
         return BindingBuilder.bind(verifyQueue).to(exchange).with("verify");
     }
 
+    @Bean
+    Binding uploadIconBinding(Queue uploadIconQueue, DirectExchange exchange) {
+        return BindingBuilder.bind(uploadIconQueue).to(exchange).with("upload-icon");
+    }
+
+    @Bean
+    Binding getIconBinding(Queue getIconQueue, DirectExchange exchange) {
+        return BindingBuilder.bind(getIconQueue).to(exchange).with("get-icon");
+    }
+
 
     @Bean
     public SimpleMessageConverter converter() {
         SimpleMessageConverter converter = new SimpleMessageConverter();
-        converter.setAllowedListPatterns(List.of("ifmo.dto.*", "java.*", "jakarta.servlet.http.*", "org.springframework.amqp.*", "ifmo.exceptions.*"));
+        converter.setAllowedListPatterns(List.of("ifmo.dto.*", "java.*", "jakarta.servlet.http.*", "org.springframework.*", "ifmo.exceptions.*", "org.hibernate.*", "jakarta.persistence.*", "org.postgresql.*"));
         return converter;
     }
 }
