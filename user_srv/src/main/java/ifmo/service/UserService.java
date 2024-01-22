@@ -9,6 +9,7 @@ import ifmo.exceptions.CustomExistsException;
 import ifmo.model.ProfileEntity;
 import ifmo.model.UserEntity;
 import ifmo.dto.RegisterRequest;
+import ifmo.validator.ImageUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
@@ -17,6 +18,10 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -47,17 +52,23 @@ public class UserService {
 
 
     @Transactional
-    public UserEntity createUserWithProfile(RegisterRequest req) {
+    public UserEntity createUserWithProfile(RegisterRequest req) throws IOException {
         if (userRepository.findByLogin(req.getLogin()).isPresent())
             throw new CustomExistsException("Пожалуйста, выберите другой логин");
+        URL resource = getClass().getClassLoader().getResource("img.png");
+        if (resource == null) {
+            throw new IllegalArgumentException("file not found!");
+        }
+        // failed if files have whitespaces or special characters
+        var icon = new File(resource.getFile());
+        //new File(resource.toURI());
         var profile = ProfileEntity.builder()
                 .mail(req.getMail())
                 .firstName(req.getFirstName())
                 .lastName(req.getLastName())
                 .dateOfBirth(req.getDateOfBirth())
                 .phone(req.getPhone())
-                .mail(req.getMail())
-                .icon(req.getIcon())
+                .icon(ImageUtil.compressImage(Files.readAllBytes(icon.toPath())))
                 .build();
         var savedProfile = profileRepository.save(profile);
         String randomCode = RandomString.make(64);

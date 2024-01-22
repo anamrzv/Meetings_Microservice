@@ -23,6 +23,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 @EnableRabbit
 @RequiredArgsConstructor
@@ -44,7 +46,7 @@ public class AuthenticationService {
     private static final String verifyQueue = "verify-queue";
 
     @RabbitListener(queues = registerQueue, returnExceptions = "true")
-    public boolean register(RegisterRequest req) throws jakarta.mail.MessagingException {
+    public boolean register(RegisterRequest req) throws jakarta.mail.MessagingException, IOException {
         var user = userService.createUserWithProfile(req);
         sendVerificationEmail(user);
         return true;

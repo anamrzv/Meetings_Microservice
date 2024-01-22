@@ -7,7 +7,7 @@ create table if not exists profile
     date_of_birth date                                not null,
     phone         varchar(20)                         not null,
     mail          varchar(320)                        not null,
-    icon          text                                not null
+    icon          bytea
 );
 
 create table if not exists roles

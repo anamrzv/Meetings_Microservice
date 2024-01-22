@@ -49,6 +49,6 @@ public class ProfileEntity {
     @NotBlank(message = "Почта пользователя отсутствует")
     private String mail;
 
-    @NotBlank(message = "Фото профиля пользователя отсутствует")
-    private String icon;
+    @Column(name = "icon", columnDefinition="bytea")
+    private byte[] icon;
 }
