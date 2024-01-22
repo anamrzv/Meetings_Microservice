@@ -30,7 +30,8 @@ public class SecurityConfiguration {
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/webjars/**",
-                                "/swagger-ui/**"
+                                "/swagger-ui/**",
+                                "websocket-user/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

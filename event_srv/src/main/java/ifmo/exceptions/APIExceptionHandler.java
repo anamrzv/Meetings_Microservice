@@ -1,6 +1,6 @@
 package ifmo.exceptions;
 
-import ifmo.exceptions.custom.UnsuccessfulSave;
+import ifmo.exceptions.UnsuccessfulSave;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -20,6 +20,13 @@ public class APIExceptionHandler {
     @ExceptionHandler(value = CustomBadRequestException.class)
     public ResponseEntity<Object> handleCustomBadExceptions(CustomBadRequestException customException) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        ExceptionDTO exceptionDTO = new ExceptionDTO(customException.getMessage(), badRequest, LocalDateTime.now());
+        return new ResponseEntity<>(exceptionDTO, badRequest);
+    }
+
+    @ExceptionHandler(value = CustomInternalException.class)
+    public ResponseEntity<Object> handleCustomInternalExceptions(CustomInternalException customException) {
+        HttpStatus badRequest = HttpStatus.INTERNAL_SERVER_ERROR;
         ExceptionDTO exceptionDTO = new ExceptionDTO(customException.getMessage(), badRequest, LocalDateTime.now());
         return new ResponseEntity<>(exceptionDTO, badRequest);
     }

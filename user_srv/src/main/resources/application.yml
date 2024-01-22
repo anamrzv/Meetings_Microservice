@@ -1,6 +1,10 @@
 spring:
   application:
     name: user-srv-eureka-client
+  amqp:
+    deserialization:
+      trust:
+        all: true
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/user_db}
     username: postgres
@@ -17,8 +21,23 @@ spring:
     baseline-description: "init"
   config:
     import: ${CONFIG_URI:optional:configserver:http://localhost:8888/}
+  mail:
+    host: smtp.mail.ru
+    port: 465
+    username:
+    password:
+    properties:
+      "mail.smtp.ssl.enable": true
+      "mail.smtp.auth": true
+      "mail.smtp.starttls.enable": true
+  servlet:
+    multipart:
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
 server:
   port: 9001
+
 eureka:
   client:
     serviceUrl:
@@ -26,3 +45,12 @@ eureka:
   instance:
     #preferIpAddress: true
     hostname: ${HOSTNAME:localhost}
+
+management:
+  endpoint:
+    refresh:
+      enabled: true
+
+mailing:
+  site: ${SITE_URI:http://localhost:8083/api/v1/auth}
+

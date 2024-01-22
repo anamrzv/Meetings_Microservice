@@ -1,5 +1,13 @@
 services:
 
+  rabbit_mq:
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "61613:61613"
+    build:
+      dockerfile: Dockerfile
+
   ##### USER SERVICE
   user_database:
     image: postgres:latest
@@ -78,6 +86,7 @@ services:
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
       HOSTNAME: meeting-srv-eureka-client
+      USER_HOSTNAME: ws://meeting-srv-eureka-client:9001/websocket-user
     links:
       - service-registry
     networks:

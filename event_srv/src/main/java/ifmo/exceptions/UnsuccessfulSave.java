@@ -1,7 +1,4 @@
-package ifmo.exceptions.custom;
-
-
-import ifmo.exceptions.CustomBadRequestException;
+package ifmo.exceptions;
 
 public class UnsuccessfulSave extends CustomBadRequestException {
     public UnsuccessfulSave(String message) {
