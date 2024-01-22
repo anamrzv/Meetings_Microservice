@@ -55,7 +55,7 @@ dependencies {
     // config server
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     //swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 }
 
 dependencyManagement {

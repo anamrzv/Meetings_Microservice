@@ -7,6 +7,7 @@ import ifmo.exceptions.custom.UnsuccessfulSave;
 import ifmo.security.JwtService;
 import ifmo.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/v1/events")
 @RequiredArgsConstructor
@@ -30,7 +32,8 @@ public class EventController {
     private final EventService eventService;
     private final JwtService jwtService;
 
-    @Operation(summary = "Получить список событий")
+    @Operation(summary = "Получить список событий",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping(value = "/",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<Page<EventEntityDto>> getAllEvents(@RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
@@ -46,7 +49,8 @@ public class EventController {
         } else throw new CustomNotFoundException("Для вас ничего не найдено :(");
     }
 
-    @Operation(summary = "Получить список событий пользователей до 18 лет")
+    @Operation(summary = "Получить список событий пользователей до 18 лет",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping(value = "/child",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<List<EventEntityDto>> getAllChildEvents() {
@@ -54,7 +58,8 @@ public class EventController {
         return ResponseEntity.ok().body(events);
     }
 
-    @Operation(summary = "Получить список событий по характеристикам")
+    @Operation(summary = "Получить список событий по характеристикам",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping(value = "/filter",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -63,7 +68,8 @@ public class EventController {
         return ResponseEntity.ok().body(events);
     }
 
-    @Operation(summary = "Получить событие по идентификатору")
+    @Operation(summary = "Получить событие по идентификатору",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping(value = "/{event_id}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     private ResponseEntity<EventEntityDto> getEventById(@PathVariable(value = "event_id") @Min(1) long eventId) {
@@ -71,7 +77,8 @@ public class EventController {
         return ResponseEntity.ok().body(addedEvent);
     }
 
-    @Operation(summary = "Добавить новое событие")
+    @Operation(summary = "Добавить новое событие",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping(value = "/",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -88,7 +95,8 @@ public class EventController {
 
     }
 
-    @Operation(summary = "Обновить информацию о событии")
+    @Operation(summary = "Обновить информацию о событии",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @PutMapping(value = "/{event_id}",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -101,7 +109,8 @@ public class EventController {
         } else throw new CustomBadRequestException("У вас недостаточно прав на совершение этого действия");
     }
 
-    @Operation(summary = "Добавить характеристику к событию")
+    @Operation(summary = "Добавить характеристику к событию",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping(value = "/characteristics/{event_id}",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -114,7 +123,8 @@ public class EventController {
         } else throw new CustomBadRequestException("У вас недостаточно прав на совершение этого действия");
     }
 
-    @Operation(summary = "Удалить характеристику из события")
+    @Operation(summary = "Удалить характеристику из события",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @DeleteMapping(value = "/characteristics/{event_id}",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
