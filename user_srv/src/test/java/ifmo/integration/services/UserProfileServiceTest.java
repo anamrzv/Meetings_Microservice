@@ -1,6 +1,6 @@
-package ru.ifmo.integration.services;
+package ifmo.integration.services;
 
-import ru.ifmo.utils.JsonDeserializer;
+import ifmo.utils.JsonDeserializer;
 import ifmo.dto.ProfileEntityDto;
 import ifmo.model.ProfileEntity;
 import ifmo.repository.ProfileRepository;
@@ -25,7 +25,7 @@ public class UserProfileServiceTest {
     @MockBean
     private UserRepository userRepository;
 
-    @DisplayName("Test profile exceptions")
+    @DisplayName("Test profile")
     @Test
     public void showUserProfiles() {
         ProfileEntity profileEntity = new ProfileEntity();

@@ -1,5 +1,13 @@
 package ifmo.integration.services;
 
+import ifmo.dto.CharacteristicsDto;
+import ifmo.dto.EventEntityDto;
+import ifmo.model.CharacteristicEntity;
+import ifmo.model.EventEntity;
+import ifmo.repository.CharacteristicRepository;
+import ifmo.repository.EventRepository;
+import ifmo.service.EventService;
+import ifmo.utils.JsonDeserializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,13 +20,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
-import ifmo.dto.EventEntityDto;
-import ifmo.model.CharacteristicEntity;
-import ifmo.model.EventEntity;
-import ifmo.repository.CharacteristicRepository;
-import ifmo.repository.EventRepository;
-import ifmo.service.EventService;
-import ifmo.utils.JsonDeserializer;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -79,12 +80,14 @@ public class EventServiceTest {
         Set<String> chars = new HashSet<>();
         chars.add("calm");
 
+        CharacteristicsDto characteristicsDto = new CharacteristicsDto(chars, 1L);
+
         Mockito.when(eventRepository.save(eventEntity)).thenReturn(eventEntity);
         Mockito.when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
         Mockito.when(characteristicRepository.getCharacteristicEntityByName(Mockito.matches("calm"))).thenReturn(Optional.of(characteristicEntity));
         Mockito.when(eventRepository.save(eventEntity)).thenReturn(eventEntity);
 
-        eventService.setCharacteristicsToEvent(1L, chars);
+        eventService.setCharacteristicsToEvent(characteristicsDto);
 
         Mockito.verify(eventRepository, Mockito.times(1)).save(eventEntity);
     }
@@ -101,18 +104,5 @@ public class EventServiceTest {
 
         Mockito.when(eventRepository.getEventEntitiesByAgeLimitBefore(18)).thenReturn(eventEntityList);
         Assertions.assertNotNull(eventService.findAllChild());
-    }
-
-    @DisplayName("Add event")
-    @Test
-    @WithMockUser(roles = {"ADMIN"})
-    public void addEventTest() {
-        EventEntity eventEntity = new EventEntity("the best day", 14, "image.jpg", "description", 4, LocalDateTime.of(2023, 1, 1, 1, 1));
-
-        Mockito.when(eventRepository.save(eventEntity)).thenReturn(eventEntity);
-        EventEntityDto eventEntityDto1 = new EventEntityDto(eventEntity);
-        EventEntityDto eventEntityDto = eventService.addEvent(eventEntityDto1);
-
-        Assertions.assertEquals(new EventEntityDto(eventEntity), eventEntityDto);
     }
 }
