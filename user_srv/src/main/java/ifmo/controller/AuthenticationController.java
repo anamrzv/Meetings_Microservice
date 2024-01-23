@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import ifmo.dto.AuthenticationRequest;
 import ifmo.dto.AuthenticationResponse;
 import ifmo.dto.RegisterRequest;
-import org.springframework.web.bind.annotation.*;
-import ifmo.requests.AuthenticationRequest;
-import ifmo.requests.AuthenticationResponse;
-import ifmo.requests.RegisterRequest;
 
 import java.util.Objects;
 

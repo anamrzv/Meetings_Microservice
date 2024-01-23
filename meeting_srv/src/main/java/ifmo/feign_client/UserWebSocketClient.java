@@ -14,15 +14,13 @@ import java.util.concurrent.ExecutionException;
 public class UserWebSocketClient {
     private final UserStompSessionHandler sessionHandler;
 
-    @Value("${websocket.url}")
-    private String URL;
     private final static String subscribeLogin = "/topic/loginResult";
     private final static String subscribeId = "/topic/idResult";
     private final static String sendUserByLogin = "/app/getUserByLoginWebsocket";
     private final static String sendUserById = "/app/getUserByIdWebsocket";
     private final StompSession session;
 
-    public UserWebSocketClient() throws ExecutionException, InterruptedException {
+    public UserWebSocketClient(@Value("${websocket.url}") String URL) throws ExecutionException, InterruptedException {
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         sessionHandler = new UserStompSessionHandler();
