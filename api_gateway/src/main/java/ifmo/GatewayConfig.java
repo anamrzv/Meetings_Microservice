@@ -17,6 +17,23 @@ public class GatewayConfig {
     @Bean
     public RouteLocator routes(RouteLocatorBuilder builder) {
         return builder.routes()
+                //swagger
+                .route("chat-openapi", r -> r.path("/chat/v3/api-docs")
+                        .filters(f -> f.rewritePath("/chat/v3/api-docs", "/v3/api-docs"))
+                        .uri("lb://chat-srv-eureka-client"))
+                .route("user-openapi", r -> r.path("/user/v3/api-docs")
+                        .filters(f -> f.rewritePath("/user/v3/api-docs", "/v3/api-docs"))
+                        .uri("lb://user-srv-eureka-client"))
+                .route("dialog-openapi", r -> r.path("/dialog/v3/api-docs")
+                        .filters(f -> f.rewritePath("/dialog/v3/api-docs", "/v3/api-docs"))
+                        .uri("lb://dialog-srv-eureka-client"))
+                .route("meeting-openapi", r -> r.path("/meeting/v3/api-docs")
+                        .filters(f -> f.rewritePath("/meeting/v3/api-docs", "/v3/api-docs"))
+                        .uri("lb://meeting-srv-eureka-client"))
+                .route("event-openapi", r -> r.path("/event/v3/api-docs")
+                        .filters(f -> f.rewritePath("/event/v3/api-docs", "/v3/api-docs"))
+                        .uri("lb://event-srv-eureka-client"))
+
                 .route("user-route", r -> r.path("/api/v1/user/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://user-srv-eureka-client"))

@@ -35,6 +35,3 @@ resilience4j.circuitbreaker:
       permittedNumberOfCallsInHalfOpenState: 3 # столько максимум раз после ожидания будет вызван сервис для проверки
       minimumNumberOfCalls: 3
       waitDurationInOpenState: 50s
-springdoc:
-  swagger-ui:
-    path: /meetingApp

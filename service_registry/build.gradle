@@ -18,8 +18,8 @@ ext {
     set('springCloudVersion', "2022.0.3")
     name = 'Eureka Server'
     description = 'Eureka Server'
-    version='0.0.1-SNAPSHOT'
-    sourceEncoding='UTF-8'
+    version = '0.0.1-SNAPSHOT'
+    sourceEncoding = 'UTF-8'
 }
 
 dependencies {

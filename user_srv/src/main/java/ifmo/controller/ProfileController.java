@@ -2,6 +2,9 @@ package ifmo.controller;
 
 import ifmo.dto.IconRequest;
 import ifmo.dto.ProfileEntityDto;
+import ifmo.service.ProfileService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import ifmo.exceptions.CustomInternalException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -20,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Objects;
 
-
+@CrossOrigin
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/profile")
@@ -33,7 +36,8 @@ public class ProfileController {
     private static final String uploadIconKey = "upload-icon";
     private static final String getIconKey = "get-icon";
 
-    @Operation(summary = "Показать данные профиля")
+    @Operation(summary = "Показать данные профиля",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping(value = "/{profile_id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<ProfileEntityDto> showProfileById(@PathVariable(value = "profile_id") @Min(1) long profileId) {
         var answer = amqpTemplate.convertSendAndReceive(exchanger, showProfileKey, profileId);
@@ -46,7 +50,8 @@ public class ProfileController {
 
     }
 
-    @Operation(summary = "Обновить профиль")
+    @Operation(summary = "Обновить профиль",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @PutMapping(value = "/",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})

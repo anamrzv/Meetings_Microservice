@@ -2,6 +2,9 @@ package ifmo.controller;
 
 
 import ifmo.dto.UserEntityDto;
+import ifmo.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import ifmo.exceptions.CustomInternalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -12,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.Objects;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
@@ -22,7 +26,8 @@ public class UserController {
     private static final String showUserKey = "show-user";
     private static final String updateUserIdKey = "show-user-id";
 
-    @Operation(summary = "Получить данные пользователя по логину")
+    @Operation(summary = "Получить данные пользователя по логину",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/{login}")
     public ResponseEntity<UserEntityDto> getUser(@PathVariable String login, @RequestHeader(value = "Authorization") String authorizationHeader) {
         var answer = amqpTemplate.convertSendAndReceive(exchanger, showUserKey, login);
@@ -34,7 +39,8 @@ public class UserController {
         return ResponseEntity.ok().body((UserEntityDto) answer);
     }
 
-    @Operation(summary = "Получить данные пользователя по id")
+    @Operation(summary = "Получить данные пользователя по id",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/by/id/{id}")
     public ResponseEntity<UserEntityDto> getUserById(@PathVariable long id, @RequestHeader(value = "Authorization") String authorizationHeader) {
         var answer = amqpTemplate.convertSendAndReceive(exchanger, updateUserIdKey, id);
