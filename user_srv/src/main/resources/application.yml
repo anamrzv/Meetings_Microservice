@@ -35,6 +35,9 @@ spring:
       file-size-threshold: 2KB
       max-file-size: 200MB
       max-request-size: 215MB
+  rabbitmq:
+    host: ${RABBIT_URI:localhost}
+    port: 5672
 server:
   port: 9001
 
@@ -53,4 +56,8 @@ management:
 
 mailing:
   site: ${SITE_URI:http://localhost:8083/api/v1/auth}
+
+application:
+  constraints:
+    secret-key: "aa641fed0dd8893053c23823e1295c4b605b39872f3745f43ac38b4438c9c7fb"
 

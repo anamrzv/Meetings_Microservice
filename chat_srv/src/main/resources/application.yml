@@ -17,6 +17,9 @@ spring:
     baseline-description: "init"
   config:
     import: ${CONFIG_URI:optional:configserver:http://localhost:8888/}
+  rabbitmq:
+    host: ${RABBIT_URI:localhost}
+    port: 5672
 server:
   port: 9005
 eureka:
@@ -35,3 +38,6 @@ resilience4j.circuitbreaker:
       permittedNumberOfCallsInHalfOpenState: 3 # столько максимум раз после ожидания будет вызван сервис для проверки
       minimumNumberOfCalls: 3
       waitDurationInOpenState: 50s
+application:
+  constraints:
+    secret-key: "aa641fed0dd8893053c23823e1295c4b605b39872f3745f43ac38b4438c9c7fb"

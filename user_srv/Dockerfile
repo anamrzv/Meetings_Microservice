@@ -1,5 +1,7 @@
 # the first stage of our build will use gradle parent image
 FROM gradle AS GRADLE_BUILD
+ARG MAIL_NAME
+ARG MAIL_PASS
 # copy src code to the container
 COPY . /usr/src/java-code/
 WORKDIR /usr/src/java-code

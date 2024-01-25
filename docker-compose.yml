@@ -1,12 +1,16 @@
 services:
 
   rabbit_mq:
+    container_name: rabbit_mq
     ports:
       - "5672:5672"
       - "15672:15672"
       - "61613:61613"
     build:
+      context: .
       dockerfile: Dockerfile
+    networks:
+      - backend
 
   ##### USER SERVICE
   user_database:
@@ -41,9 +45,12 @@ services:
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
       HOSTNAME: user-srv-eureka-client
+      RABBIT_URI: rabbit_mq
+      SITE_URI: http://api-gateway-application:8083/api/v1/auth
     depends_on:
       - user_database
       - configuration-server
+      - rabbit_mq
     links:
       - service-registry
     networks:
@@ -72,6 +79,8 @@ services:
     depends_on:
       - meeting_database
       - configuration-server
+      - rabbit_mq
+      - user-application
     build:
       context: ./meeting_srv
       dockerfile: Dockerfile
@@ -86,7 +95,8 @@ services:
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
       HOSTNAME: meeting-srv-eureka-client
-      USER_HOSTNAME: ws://meeting-srv-eureka-client:9001/websocket-user
+      USER_HOSTNAME: ws://user-srv-eureka-client:9001/websocket-user
+      RABBIT_URI: rabbit_mq
     links:
       - service-registry
     networks:
@@ -115,6 +125,7 @@ services:
     depends_on:
       - event_database
       - configuration-server
+      - rabbit_mq
     build:
       context: ./event_srv
       dockerfile: Dockerfile
@@ -129,6 +140,7 @@ services:
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
       HOSTNAME: event-srv-eureka-client
+      RABBIT_URI: rabbit_mq
     links:
       - service-registry
     networks:
@@ -157,6 +169,7 @@ services:
     depends_on:
       - dialog_database
       - configuration-server
+      - rabbit_mq
     build:
       context: ./dialog_srv
       dockerfile: Dockerfile
@@ -171,6 +184,7 @@ services:
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
       HOSTNAME: dialog-srv-eureka-client
+      RABBIT_URI: rabbit_mq
     links:
       - service-registry
     networks:
@@ -199,6 +213,7 @@ services:
     depends_on:
       - chat_database
       - configuration-server
+      - rabbit_mq
     build:
       context: ./chat_srv
       dockerfile: Dockerfile
@@ -212,6 +227,7 @@ services:
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
       HOSTNAME: chat-srv-eureka-client
+      RABBIT_URI: rabbit_mq
     links:
       - service-registry
     networks:
@@ -250,25 +266,18 @@ services:
       context: ./api_gateway
       dockerfile: Dockerfile
     ports:
-      - "8082:8082"
+      - "8083:8083"
     environment:
       CONFIG_URI: optional:configserver:http://configuration-server:8888
       EUREKA_URI: http://service-registry:8761/eureka/
     depends_on:
-      configuration-server:
-        condition: service_completed_successfully
-      service-registry:
-        condition: service_completed_successfully
-      user-application:
-        condition: service_completed_successfully
-      meeting-application:
-        condition: service_completed_successfully
-      event-application:
-        condition: service_completed_successfully
-      dialog-application:
-        condition: service_completed_successfully
-      chat-application:
-        condition: service_completed_successfully
+      - configuration-server
+      - service-registry
+      - user-application
+      - meeting-application
+      - event-application
+      - dialog-application
+      - chat-application
     networks:
       - backend
 

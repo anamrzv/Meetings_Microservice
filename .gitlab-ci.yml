@@ -1,0 +1,52 @@
+stages:
+  - test
+  - build
+  - run
+
+test-job:
+  image: gradle:latest
+  stage: test
+  tags:
+    - meeting
+  script:
+    - cd user_srv ; gradle test ; cd ..
+    - cd meeting_srv ; gradle test ; cd ..
+    - cd event_srv ; gradle test ; cd ..
+    - cd dialog_srv ; gradle test ; cd ..
+    - cd chat_srv ; gradle test ; cd ..
+    - echo "Tests completed"
+
+build-job:
+  image: docker:24.0.5
+  stage: build
+  services:
+    - name: docker:dind
+      alias: thedockerhost
+      command: [ "--tls=false" ]
+  variables:
+    DOCKER_HOST: tcp://thedockerhost:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  tags:
+    - meeting
+  script:
+    - docker-compose down
+    - docker-compose build --build-arg MAIL_NAME="${MAIL_NAME}" --build-arg MAIL_PASS="${MAIL_PASS}"
+
+run-job:
+  image: docker:24.0.5
+  stage: run
+  services:
+    - name: docker:dind
+      alias: thedockerhost
+      command: [ "--tls=false" ]
+  variables:
+    DOCKER_HOST: tcp://thedockerhost:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  tags:
+    - meeting
+  script:
+    - docker-compose up --detach
+    - docker image prune -f || true
+    - echo "Application successfully started"

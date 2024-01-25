@@ -11,6 +11,6 @@ FROM openjdk:17
 WORKDIR /usr/src/java-app
 # copy only the artifacts we need from the first stage and discard the rest
 COPY --from=GRADLE_BUILD /usr/src/java-code/build/libs/api_gateway-0.0.1-SNAPSHOT.jar ./api_gateway.jar
-EXPOSE 8082
+EXPOSE 8083
 # set the startup command to execute the jar
 CMD ["java", "-jar", "api_gateway.jar"]
